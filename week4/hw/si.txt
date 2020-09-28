@@ -1,0 +1,416 @@
+33c33
+<     peddler in face) Too close, a little too close.  (Camera
+---
+> tle too close.  (Camera
+50c50
+<     things, it is not what is outside, but what is inside
+---
+> tside, but what is inside
+71c71
+<         (IAGO squawks as he flies by and grabs the medallion.)  Ouch!
+---
+>  as he flies by and grabs the medallion.)  Ouch!
+95c95
+<         treasure is yours, but the lamp is mine!
+---
+> urs, but the lamp is mine!
+119c119
+<      He turns back, but the lion's mouth slams shut and the dune
+---
+> e
+142c142
+< (Cut to a rooftop, where ALADDIN rushes up to the edge, carrying
+---
+> ALADDIN rushes up to the edge, carrying
+166c166
+< GUARD 1:    You two, over that way, and you, with me.  We'll
+---
+>  way, and you, with me.  We'll
+194c194
+<     swings, then pulls down the GUARD's pants.  ABU raspberries the
+---
+> swings, then pulls down the GUARD's pants.  ABU raspberries the
+219c219
+<     hands like an acrobat.  The pair swing into a harem.)
+---
+> 
+244c244
+<     nails {of course one extremely large GUARD lands on him}.  ABU
+---
+> U
+272c272
+< GUARD 2:    You idiot--we've ALL got swords!!
+---
+>  ALL got swords!!
+298c298
+<     to land safely and out of danger. ALADDIN and ABU high-five each
+---
+> high-five each
+326c326
+< BYSTANDER 1:    On his way to the palace, I suppose.
+---
+> 1:    On his way to the palace, I suppose.
+355c355
+< ALADDIN:    I'm not worthless.  And I don't have fleas.  Come
+---
+> thless.  And I don't have fleas.  Come
+385c385
+<         off into the garden looking for his daughter.  He
+---
+> r.  He
+408c408
+< JASMINE:    Father,  I hate being forced into this.  (She takes
+---
+> NE:    Father,  I hate being forced into this.  (She takes
+428c428
+< (RAJAH looks up and thinks for a second.  JASMINE goes to the dove
+---
+> s to the dove
+447c447
+<         (IAGO glares at him.)  Now then, perhaps I can
+---
+> s I can
+470c470
+<         play with your little toys.
+---
+> e toys.
+495c495
+<         have my life lived for me.  I'll miss you.(She
+---
+>  lived for me.  I'll miss you.(She
+520c520
+<     where he places it on top of a stack.  He looks confused, like
+---
+> ike
+545c545
+<         really very sorry.
+---
+> ry.
+574c574
+< (The sword drops, but his hand is stopped by ALADDIN's.)
+---
+> is hand is stopped by ALADDIN's.)
+596c596
+<             Jasmine.)  Now come along sis. Time to see the
+---
+>   Now come along sis. Time to see the
+620c620
+<     into an hourglass below.  The sands begin to swirl.)
+---
+> The sands begin to swirl.)
+667c667
+< JASMINE:    Is this where you live?
+---
+>   Is this where you live?
+690c690
+< ALADDIN:    So, where're you from?
+---
+> re're you from?
+718c718
+<     ALADDIN leans in to kiss her.  He is interrupted, however,
+---
+> .  He is interrupted, however,
+745c745
+<         have here, men--a street mouse.  (He throws her
+---
+> street mouse.  (He throws her
+773c773
+< JAFAR:  Oh, uh, princess.
+---
+>  Oh, uh, princess.
+796c796
+< JAFAR:  I am exceedingly sorry, princess.
+---
+> orry, princess.
+851c851
+<         with treasures beyond your wildest dreams.
+---
+> 
+874c874
+<         seem.  So, do we have a deal?
+---
+> ve a deal?
+907c907
+< (ABU stops in mid run, hovering over a rug on the floor.)
+---
+> oor.)
+930c930
+<     thinking for a second, until CARPET waves a tassel in front of his
+---
+> l in front of his
+954c954
+<         motions for them to follow it.)  I think he knows
+---
+> to follow it.)  I think he knows
+977c977
+<     shake.)
+---
+> e.)
+1000c1000
+<         his head and sees they are flying into a wall.)
+---
+> ees they are flying into a wall.)
+1025c1025
+<         normal voice.) Your eternal reward.
+---
+>  eternal reward.
+1046c1046
+< SULTAN: There, there, there, my child--we'll set it right.
+---
+> d--we'll set it right.
+1074c1074
+<         such a crick in the neck!  (He hangs ALADDIN on a
+---
+>       such a crick in the neck!  (He hangs ALADDIN on a
+1092c1092
+< ALADDIN:    (Shaking his head) I must have hit my head harder
+---
+>  have hit my head harder
+1110c1110
+<         a dummy) often imitated, (tosses the dummy aside)
+---
+> 
+1132c1132
+< ALADDIN:    (To ABU) Now I know I'm dreaming.
+---
+> 
+1157c1157
+<      hand and rubs lamp with it.)
+---
+> lamp with it.)
+1187c1187
+<     Try some of column 'A'
+---
+> 'A'
+1212c1212
+<     one of the heads on his fingertip like a basketball.  He tosses
+---
+>  basketball.  He tosses
+1233c1233
+<      a list {written in Arabic} out of ALADDIN's ear, which he uses
+---
+> ADDIN's ear, which he uses
+1254c1254
+< GENIE:  (As William F. Buckley) Ah, almost.  There are a
+---
+> liam F. Buckley) Ah, almost.  There are a
+1273c1273
+<         have to find a way out of here--
+---
+>        have to find a way out of here--
+1295c1295
+< SULTAN: Jafar, this is an outrage.  If it weren't for all
+---
+>  it weren't for all
+1315c1315
+<         up to that chump, and his chump daughter for the
+---
+> and his chump daughter for the
+1363c1363
+< GENIE:  It's all part-and-parcel, the whole genie gig.
+---
+> E:  It's all part-and-parcel, the whole genie gig.
+1383c1383
+< ALADDIN:    No, really, I promise.  (He pushes the nose back in
+---
+>  the nose back in
+1404c1404
+<         chicken a'la king? (Pulls out a chicken with a
+---
+>        chicken a'la king? (Pulls out a chicken with a
+1422c1422
+<         macho!  Now, still needs something.  What does it
+---
+> still needs something.  What does it
+1440c1440
+<         ABU into:  a duck, an ostrich, a turtle, and a '57
+---
+> e, and a '57
+1461c1461
+<     (Look for the BEAST here.)  We tilt up and see the SULTAN
+---
+>  the BEAST here.)  We tilt up and see the SULTAN
+1481c1481
+<         must then be wed to...hmm...interesting.
+---
+> eresting.
+1505c1505
+< MAJOR:  Hey, clear the way in the old bazaar,
+---
+> , clear the way in the old bazaar,
+1534c1534
+< (The pile collapses on ALI, but a GENIE (tm) brand lightning bolt
+---
+> e collapses on ALI, but a GENIE (tm) brand lightning bolt
+1562c1562
+<         GIRLS: (in couterpoint)
+---
+> in couterpoint)
+1588c1588
+< (ALADDIN throws gold coins out to the people, who rush over to
+---
+> ws gold coins out to the people, who rush over to
+1612c1612
+< ALADDIN:    (Takes on a deeper voice.)  Ahem.  Your majesty, I have
+---
+> sty, I have
+1635c1635
+<     was standing on the head of the staff, falls down, repeatedly
+---
+> falls down, repeatedly
+1657c1657
+< SULTAN: Out of the way, I'm coming in to land.  Jafar,
+---
+> way, I'm coming in to land.  Jafar,
+1679c1679
+< ALADDIN:    Your majesty, I am Prince Ali Ababwa! (He pricks
+---
+> bwa! (He pricks
+1701c1701
+< GENIE:  (to carpet, playing chess) So move!  (CARPET does,
+---
+>  playing chess) So move!  (CARPET does,
+1720c1720
+< ALADDIN:    Hey, that's the last thing I want to  be.  Okay,
+---
+>   Okay,
+1750c1750
+<         before.)  Wait, wait.  Do I know you?
+---
+> u?
+1774c1774
+< ALADDIN:    Uh, right.  Right.  A prince like me.
+---
+> , right.  Right.  A prince like me.
+1795c1795
+< JASMINE:    (Now she's amazed) How--how are you doing that?
+---
+>    (Now she's amazed) How--how are you doing that?
+1818c1818
+<     Tell me princess, now when did you last
+---
+> ell me princess, now when did you last
+1851c1851
+<     then circles a pillar of clouds, giving a swirly look to it.)
+---
+>  look to it.)
+1877c1877
+< JASMINE:    Every turn a surprise
+---
+> MINE:    Every turn a surprise
+1906c1906
+< ALADDIN:    Nah.  He hates fireworks.  (CARPET looks up
+---
+> works.  (CARPET looks up
+1927c1927
+<         city in disguise, it sounds a little strange,
+---
+> y in disguise, it sounds a little strange,
+1951c1951
+<         Muffled words) Abu!  Abu!  (We see the elephant
+---
+> rds) Abu!  Abu!  (We see the elephant
+1972c1972
+<         the lamp.  (Squeaks the duck)  Hello.  (Sees
+---
+>  Hello.  (Sees
+1991c1991
+< (Cut to JASMINE in her room, humming "A Whole New World" and brushing
+---
+> in her room, humming "A Whole New World" and brushing
+2020c2020
+<         killed.
+---
+>        killed.
+2050c2050
+< JAFAR:  This is not done yet, boy!
+---
+> 
+2074c2074
+<         exactly what this kingdom needs!  (ALADDIN looks
+---
+> actly what this kingdom needs!  (ALADDIN looks
+2095c2095
+< IAGO:       Me?
+---
+>     Me?
+2118c2118
+<         free."  (He grabs ALADDIN's head and uses
+---
+> d and uses
+2139c2139
+<         spout and raspberries him.)   Well, fine. (He slams
+---
+> s him.)   Well, fine. (He slams
+2162c2162
+<         feet out from under it. IAGO runs into the palace
+---
+> rom under it. IAGO runs into the palace
+2186c2186
+< JASMINE:    Good luck!  (She pushes him out onto the platform
+---
+> k!  (She pushes him out onto the platform
+2214c2214
+< SULTAN: Bless my soul.  What is this?  What is going on?
+---
+> What is this?  What is going on?
+2241c2241
+< IAGO:       Why am I not surprised?
+---
+>  Why am I not surprised?
+2265c2265
+<     Yes, it is he,
+---
+> t is he,
+2297c2297
+<     the pillar crashes and rolls.  It finally comes to a stop.
+---
+> es and rolls.  It finally comes to a stop.
+2315c2315
+<         rolls over him, and when it is gone, ALADDIN and
+---
+> DDIN and
+2340c2340
+<         on the arm of the most powerful man in the world.
+---
+> the most powerful man in the world.
+2369c2369
+< JAFAR:  That's better.  (He pulls the GENIE's jaw up like a
+---
+> 's better.  (He pulls the GENIE's jaw up like a
+2395c2395
+< JAFAR:  And the street rat?
+---
+> :  And the street rat?
+2430c2430
+< JAFAR:  Things are unraveling fast, now boy. (CARPET is
+---
+> ling fast, now boy. (CARPET is
+2449c2449
+< GENIE:  Rickem, rockem, rackem, rake--stick that sword into
+---
+> at sword into
+2476c2476
+<         you could defeat the most powerful being on earth!
+---
+> l being on earth!
+2501c2501
+< (GENIE zaps JAFAR with the last GENIE (tm) brand lightning bolt.
+---
+> R with the last GENIE (tm) brand lightning bolt.
+2527c2527
+< GENIE:  Al, you little genius, you!
+---
+> 
+2550c2550
+< ALADDIN:    Jasmine, I'm sorry I lied to you about being a
+---
+>  sorry I lied to you about being a
+2573c2573
+< GENIE:  One bona fide prince pedigree coming up.  I--what?
+---
+> digree coming up.  I--what?
+2598c2598
+< (They hug.  The SULTAN steps forward.)
+---
+> e SULTAN steps forward.)
