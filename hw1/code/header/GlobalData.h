@@ -7,11 +7,11 @@
 extern const char err_a[64]; 
 extern const char err_b[64]; 
 extern const char err_c[64]; 
-
+extern const char err_d[64];
 
 /* for padding */
-extern const char endl;
-extern const char blank;
+extern const char endl[1];
+extern const char blank[1];
 
 
 /* offset saving array */

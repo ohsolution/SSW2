@@ -9,8 +9,12 @@
 
 bool excute_query(void)
 {
+    //printf("start\n");
     query input = ConsoleInput();          
 
+    search(input);
+    
+    /*
     switch(input.type)
     {
         case SINGLEWORD:
@@ -29,7 +33,9 @@ bool excute_query(void)
             // output error?
             break;
     }
-    
+    */
+
+    free(input.wstr);
     //secure_write(STDOUT,endl,sizeof(endl));
 
     return true;

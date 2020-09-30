@@ -3,6 +3,7 @@
 char const err_a[64] = "Need More Argument!\n";
 char const err_b[64] = "Too many Arguments!\n";
 char const err_c[64] = "Input file is not exist!\n";
+char const err_d[64] = "reallocating error!\n";
 
 char const endl = '\n';
 char const blank = ' ';
