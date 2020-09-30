@@ -2,7 +2,7 @@
 #include "../../header/definition.h"
 #include <stdio.h>
 
-void secure_open(int * fd,int argc,char **argv)
+void secure_open(int argc,char **argv)
 {
     if(argc < 2)
     {
@@ -15,9 +15,9 @@ void secure_open(int * fd,int argc,char **argv)
         exit(1);
     }
     
-    *fd = open(argv[1],O_RDONLY);
+    IFD = open(argv[1],O_RDONLY);
         
-    if(*fd<0)
+    if(IFD<0)
     {
         write(STDOUT,err_c,25);
         exit(1);
@@ -31,44 +31,30 @@ void secure_write(int fd,char * str,size_t sz)
 
 }
 
-void save_offset(int fd)
+void save_offset()
 {
     offsetsz = (size_t *)malloc(sizeof(size_t)*(line));    
-    tyline = (Qtype *)malloc(sizeof(Qtype)*(line));
     char buf[max_v];
     int bl;
     size_t spos =0;
 
-    int space =0;
-    int type=0;
-
     do
     {
-        bl = read(fd,buf,sizeof(buf));
+        bl = read(IFD,buf,sizeof(buf));
 
         for(int i=0;i<bl;++i,++spos)
         {
             if(buf[i] == '\n')
             {
-                offsetsz[curline] = spos;
+                offsetsz[curline++] = spos;
                 spos =0;
-                
-                type += (!type) * (space+1); 
-                tyline[curline] = type;
-                type =0; space=0;
 
-                if(++curline == line)
+                if(curline == line)
                 {
                     line <<=1;
                     offsetsz = realloc(offsetsz,sizeof(size_t)*(line));
-                    tyline = realloc(tyline,sizeof(Qtype)*(line));
                 }
             }
-
-            if(buf[i] == '*') type = REGULAREXP;
-            if(buf[i] == '\"') type = SENENTENCE;
-            space += (buf[i]==' ');
-
         }
 
         /*
@@ -82,54 +68,47 @@ void save_offset(int fd)
 
     }while(bl==max_v);
 
-    return;
+   return;
 }
 
 query ConsoleInput(void)
 {
     query ret;
 
-    ret.wordnum = 1;
-    ret.word = 
+    ret.wstr = (char*)malloc(sizeof(char)*max_v);
+    ret.wstr[0] = ' ';
+    int bl;
+    size_t spos =1;
+    ret.type = 0;
+    int space =0;
 
-    char buf[1];
-
-    while(read(STDIN,buf,sizeof(buf))
+    do
     {
-        if(buf[0] == ' ' || buf[0]=='\t') 
-        {
-            ++ret.wordnum;
+        bl = read(STDIN,ret.wstr+spos,sizeof(char)*max_v);
 
-        }
-        else if(buf[0] == '\"') ret.type = SENTENCE;
-        else if(buf[0] == '*') ret.type = REGULAREXP;
-        else if(buf[0] =='\n');
-        else
+        for(int i=0;i<bl;++i,++spos)
         {
+            if(ret.wstr[spos] == '\n') ret.type += (!ret.type) * (space+1);
+            if(ret.wstr[spos] == '*') ret.type = REGULAREXP;
+            if(ret.wstr[spos] == '\"') ret.type = SENTENCE;
+            space += (ret.wstr[spos]==' ' || ret.wstr[spos] == '\t');
             
+            if(ret.wstr[spos] == '\n' || ret.wstr[spos]=='\t' || ret.wstr[spos]=='*' || ret.wstr[spos]=='\"') ret.wstr[spos]=' ';
+            if(spos==sizeof(ret.wstr)) ret.wstr = realloc(ret.wstr,sizeof(ret.wstr)*2);            
         }
-    }
-        
+
+        /*
+        #error
+        if(bl<0)
+        {
+            write(STDOUT,err_d,25);
+            exit(1);
+        }
+        */
+
+    }while(bl==max_v);
+
+    ret.sz = spos;
+
+    return ret;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

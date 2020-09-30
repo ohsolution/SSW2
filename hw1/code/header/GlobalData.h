@@ -10,7 +10,8 @@ extern const char err_c[64];
 
 
 /* for padding */
-extern const char padding;
+extern const char endl;
+extern const char blank;
 
 
 /* offset saving array */
@@ -19,5 +20,9 @@ extern Qtype * tyline;
 extern long long line;
 extern int max_v;
 extern long long curline;
+
+/*file descriptor */
+extern int IFD;
+
 
 #endif /* GlobalData.h */

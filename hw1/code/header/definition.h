@@ -28,8 +28,8 @@ typedef int Qtype;
 
 typedef struct _query
 {
-    char ** word;
-    int wordnum;
+    char * wstr;
+    int sz;
     Qtype type;
 } query;
 

@@ -1,13 +1,15 @@
 
-#include "header/definition.h"
-#include "header/GlobalData.h"
-#include "header/FunctionHeader/search.h"
-#include "header/FunctionHeader/IO.h"
-#include "header/FunctionHeader/parser.h"
+#include "../header/definition.h"
+#include "../header/GlobalData.h"
+//#include "../header/FunctionHeader/search.h"
 
-bool excute_query()
+//#include "../header/FunctionHeader/parser.h"
+#include "../header/FunctionHeader/IO.h"
+#include <stdio.h>
+
+bool excute_query(void)
 {
-    query input = parsing(ConsoleInput());          
+    query input = ConsoleInput();          
 
     switch(input.type)
     {
@@ -28,20 +30,18 @@ bool excute_query()
             break;
     }
     
-    secure_write(STDOUT,padding,sizeof(padding));
+    //secure_write(STDOUT,endl,sizeof(endl));
 
     return true;
 }
 
 int main(int argc,char **argv)
-{
-    int fd;
-    
-    secure_open(&fd,argc,argv);
+{    
+    secure_open(argc,argv);
 
-    save_offset(fd);
+    save_offset();
     
-    while(excute_query(fd));
+    while(excute_query());
 
     return 0;
 }

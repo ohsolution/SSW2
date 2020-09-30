@@ -1,13 +1,15 @@
 #ifndef _IO_H
 #define _IO_H 1
 
-void secure_open(int * __fd,int __argc, char ** __argv);
+#include "../definition.h"
+
+void secure_open(int __argc, char ** __argv);
 
 void secure_write(int __fd,char * __str,size_t __sz);
 
-void save_offset(int __fd);
+void save_offset();
 
-char * ConsoleInput(void);
+query ConsoleInput(void);
 
 
 
