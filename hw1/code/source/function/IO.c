@@ -46,10 +46,11 @@ void to_str(int ln,int sz)
 {
     for(int i=osz+sz-1;i>=osz;--i,ln/=10)
     {
-        output[i] = (ln%10)-'0';
+        int t = ln % 10;
+        output[i] = (char)(t+'0');
     }
     output[osz+sz] = ' ';
-    osz = osz+sz;
+    osz = osz+sz+1;
     return;
 }
 
@@ -64,14 +65,20 @@ void num_write(int ln,int index)
     if(osz!=-1) write(STDOUT,output,osz);
 
     osz= 0;
-
     to_str(ln,getsz(ln));    
 
     if(index==-1) return;
 
-    output[osz++] = ':';
+    output[osz-1] = ':';
 
-    to_str(index,getsz(index));
+    if(index) to_str(index,getsz(index));    
+    else 
+    {
+        output[osz] = '0';
+        output[++osz] = ' ';
+        ++osz;
+    }
+
 }
 
 
@@ -129,30 +136,34 @@ query ConsoleInput(void)
     
     int bl;
     size_t spos = 0;
-    ret.type = 0;
-    int space =0;
     
     bool ck = false;
     bool sck = true;
     bool wck = false;
 
     size_t sl=max_v;
-
+    int wsz = 0;
     ret.wstr[spos++] = ' ';
-    
+    ret.tp = 0;
+
     do
     {
         bl = read(STDIN,ret.wstr+spos,sizeof(char)*max_v);
 
         for(int i=0;i<bl;++i,++spos)
         {
+            if(ret.wstr[spos]!=' ' && ret.wstr[spos]!='\t'&&ret.wstr[spos]!='\n' && ret.wstr[spos]!='*' && ret.wstr[spos]!='\"') wck=true;            
+            else 
+            {
+                wsz += wck;
+                wck=false;
+            }
+
             ck |= (ret.wstr[spos] == '\n');
 
-            if(ret.wstr[spos] == '\n') ret.type += (!ret.type) * ((space>0) + 1);
-            if(ret.wstr[spos] == '*') ret.type = REGULAREXP;
-            if(ret.wstr[spos] == '\"') ret.type = SENTENCE;
-            if(wck) space += (ret.wstr[spos]==' ' || ret.wstr[spos] == '\t');
-            
+            if(ret.wstr[spos] == '*') ret.tp = REGULAREXP;
+            if(ret.wstr[spos] == '\"') ret.tp = SENTENCE;
+
             if(ret.wstr[spos]=='*' || ret.wstr[spos] == '\n') ret.wstr[spos]=' ';
 
             if(ret.wstr[spos]=='\"') 
@@ -169,13 +180,14 @@ query ConsoleInput(void)
                 void * tmp = realloc(ret.wstr,sl);
                 if(!tmp)
                 {
+                    /*
                     write(STDOUT,err_d,25);
-                    exit(1);
+                    exit(1);*/
                 }
                 else ret.wstr = tmp;     
             }
 
-            if(ret.wstr[spos]!=' ' && ret.wstr[spos]!='\t'&&ret.wstr[spos]!='\n' && ret.wstr[spos]!='*' && ret.wstr[spos]!='\"') wck=true;            
+            
         }
 
         /*
@@ -188,15 +200,16 @@ query ConsoleInput(void)
         */
 
     }while(!ck);
-
+    
     ret.sz = spos+1;
 
     void * tmp = realloc(ret.wstr,sizeof(char) * ret.sz);
     if(!tmp); // error
     else ret.wstr =tmp;
 
-
     ret.wstr[ret.sz-1] = '\n';
+    ret.wordsz = wsz;
+    if(!ret.tp) ret.tp = (ret.wordsz>1)+1;
 
     return ret;
 }

@@ -93,9 +93,7 @@ void opr_single(char * instr, char * oristr,int ln)
 
         if(index==-1) break;
 
-        //printf("%d %d\n",index,ln);
-
-        //num_write(ln,index);
+        num_write(ln,index);
 
         index += wsz;
     }
@@ -104,12 +102,12 @@ void opr_single(char * instr, char * oristr,int ln)
     return;
 }
 
-void opr_multi(char * instr, char * oristr,int ln)
+void opr_multi(char * instr, char * oristr,int ln,int wsz)
 {
     bool ck = true;
     int l,r;
     l = r = 0;
-
+    int c =0;
     while(1)
     {   
         l = find_ep(instr,r,' ');
@@ -123,11 +121,13 @@ void opr_multi(char * instr, char * oristr,int ln)
             break;
         }
 
-        free(incp);
-        
+        free(incp);        
+
+        if(++c == wsz) break;
     }
 
     if(ck) num_write(ln,-1);
+    
 
     return;
 }
@@ -168,15 +168,15 @@ void opr_sentence(char * instr, char * oristr,int ln)
 
     char * incp = strcp(instr,l,r);
 
-    int index= 0;
+    int index= -1;
 
     while(1)
     {
         index = find_str(oristr,incp,index+1,r-l+1);
 
-        num_write(ln,index);
-
         if(index==-1) break;
+        
+        num_write(ln,index);
     }
 
     free(incp);
@@ -192,43 +192,39 @@ void search(query input)
     for(int i=1; i<curline; ++i)
     {
         char * buf = (char*)malloc(sizeof(char)*(offsetsz[i]+2));
-                  
+          
         read(IFD,buf,offsetsz[i]);
+
         buf[0] = ' ';
         buf[offsetsz[i]] = ' '; 
         buf[offsetsz[i]+1] = '\n';        
               
 
-        if(input.type != SENTENCE)
+        if(input.tp != SENTENCE)
         {
             for(int t =1; t<offsetsz[i]+1;++t) if(buf[t] == '\t') buf[t] = ' ';
-        }        
-
-        if(i==221)
-        {
-            write(STDOUT,buf,offsetsz[i]+2);
         }
-        
-        switch(input.type)
+
+        switch(input.tp)
         {
             case SINGLEWORD:
                 opr_single(input.wstr,buf,i);
                 break;
             case MULTWORD:
-                opr_multi(input.wstr,buf,i);
+                opr_multi(input.wstr,buf,i,input.wordsz);
                 break;            
             case REGULAREXP:
                 opr_regex(input.wstr,buf,i);
                 break;
             case SENTENCE:                
                 opr_sentence(input.wstr,buf,i);
+                break;
             default:
                 break;
                 //error
         }
         
         off += offsetsz[i];
-        //buf[offsetsz[i]] = '\n';
         free(buf);
     }
 }

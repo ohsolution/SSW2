@@ -26,6 +26,6 @@ extern int IFD;
 /*OUTPUT */
 
 extern char output[100007];
-extern size_t osz;
+extern int osz;
 
 #endif /* GlobalData.h */

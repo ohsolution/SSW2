@@ -15,6 +15,6 @@ int max_v = 1024;
 long long curline=1;
 int IFD;
 char output[100007];
-size_t osz = 0;
+int osz = 0;
 
 

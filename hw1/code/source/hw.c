@@ -9,10 +9,15 @@
 #include <stdio.h>
 
 bool excute_query(void)
-{
+{    
     query input = ConsoleInput();          
 
     osz = -1;
+
+    //write(STDOUT,input.wstr,input.sz);
+    
+    //printf("%d %d %d\n",input.wordsz,input.tp,input.sz);
+    //write(STDOUT,input.wstr,input.sz);
 
     search(input);
     
@@ -40,7 +45,8 @@ bool excute_query(void)
     */
 
     free(input.wstr);
-    //secure_write(STDOUT,endl,sizeof(endl));
+    num_write(-1,-1);
+    write(STDOUT,endl,sizeof(endl));
 
     return true;
 }
