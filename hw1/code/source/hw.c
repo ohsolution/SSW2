@@ -1,19 +1,23 @@
 
 #include "../header/definition.h"
 #include "../header/GlobalData.h"
-//#include "../header/FunctionHeader/search.h"
+#include "../header/FunctionHeader/search.h"
 
 //#include "../header/FunctionHeader/parser.h"
 #include "../header/FunctionHeader/IO.h"
+
 #include <stdio.h>
 
 bool excute_query(void)
 {
-    //printf("start\n");
     query input = ConsoleInput();          
+
+    osz = -1;
 
     search(input);
     
+    //printf("clear");
+
     /*
     switch(input.type)
     {

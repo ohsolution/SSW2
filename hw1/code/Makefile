@@ -3,8 +3,8 @@
 TARGET=pa1
 D=source/
 F=source/function/
-OBJECTS= $(D)hw.c $(D)GlobalData.c $(F)IO.c #$(F)parser $(F)search
-OBJ=hw.o GlobalData.o IO.o #parser.o search.o
+OBJECTS= $(D)hw.c $(D)GlobalData.c $(F)IO.c $(F)search.c
+OBJ=hw.o GlobalData.o IO.o search.o
 
 all: $(TARGET)
 

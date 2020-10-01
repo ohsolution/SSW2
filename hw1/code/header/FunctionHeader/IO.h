@@ -11,6 +11,8 @@ void save_offset();
 
 query ConsoleInput(void);
 
+void num_write(int __ln,int __index);
+
 
 
 #endif /* IO.h */
