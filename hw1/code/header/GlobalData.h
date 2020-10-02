@@ -15,7 +15,6 @@ extern const char blank[1];
 
 /* offset saving array */
 extern size_t * offsetsz;
-extern Qtype * tyline;
 extern long long line;
 extern int max_v;
 extern long long curline;

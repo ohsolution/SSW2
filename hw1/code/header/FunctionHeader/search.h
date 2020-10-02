@@ -5,6 +5,4 @@
 
 void search(query __input);
 
-
-
 #endif /* search.h */

@@ -5,9 +5,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 
 /* boolean Datatype */
 typedef enum { false, true } bool;
@@ -18,7 +15,6 @@ typedef enum { false, true } bool;
 #define STDERR 2
 
 /* Input Type */
-
 typedef int Qtype;
 #define SINGLEWORD 1
 #define MULTWORD 2
