@@ -1,19 +1,28 @@
 
 #include "../header/definition.h"
 #include "../header/GlobalData.h"
-//#include "../header/FunctionHeader/search.h"
+#include "../header/FunctionHeader/search.h"
 
 //#include "../header/FunctionHeader/parser.h"
 #include "../header/FunctionHeader/IO.h"
+
 #include <stdio.h>
 
 bool excute_query(void)
-{
-    //printf("start\n");
+{    
     query input = ConsoleInput();          
+
+    osz = -1;
+
+    //write(STDOUT,input.wstr,input.sz);
+    
+    //printf("%d %d %d\n",input.wordsz,input.tp,input.sz);
+    //write(STDOUT,input.wstr,input.sz);
 
     search(input);
     
+    //printf("clear");
+
     /*
     switch(input.type)
     {
@@ -36,7 +45,8 @@ bool excute_query(void)
     */
 
     free(input.wstr);
-    //secure_write(STDOUT,endl,sizeof(endl));
+    num_write(-1,-1);
+    write(STDOUT,endl,sizeof(endl));
 
     return true;
 }

@@ -1,62 +1,185 @@
 #include "../../header/definition.h"
 #include "../../header/GlobalData.h"
 #include "../../header/FunctionHeader/IO.h"
+#include <stdio.h>
 
-void opr_single(char * instr, char * oristr,size_t isz,size_t osz,int ln)
+bool match(char a,char b)
+{
+    if(a==b) return true;
+
+    if(a >= 'A' && a <='Z' && b-a==32) return true;
+
+    if(a >= 'a' && a <='z' && ((int)a-(int)b)==32) return true;
+
+    if(a=='*') return (b==' ' || b=='\t');
+
+    return false;
+}
+
+
+int find_ep(char * str,int idx,char ch)
+{
+    bool ck = false;
+
+    while(*(str+idx)!='\n')
+    {
+        if(*(str+idx)==ch) ck = true;
+        else if(ck) return idx-1;
+        ++idx;
+    }
+
+    return -1;
+}
+
+int find_sp(char * str,int idx,char ch)
+{
+    while(*(str+idx)!='\n')
+    {
+        if(*(str+idx)==ch) return idx;
+
+        ++idx;
+    }
+
+    return -1;
+}
+
+int find_str(char * ori, char * w,int lsz,int lp)
+{
+    int rsz= 0;
+
+    while(*(ori+lsz) != '\n')
+    {
+        if(match(*(w+rsz),*(ori+lsz)))
+        {
+            if(rsz == lp-1) return lsz-lp+1;
+            ++rsz;
+        }
+        else rsz=0;
+    
+        ++lsz; 
+    }
+
+    return -1;
+}
+
+char * strcp(char * str, int l ,int r)
+{
+    char * tmp = malloc(r-l+1);
+
+    int c=  l;
+    int d = 0;
+
+    while(c<=r)
+    {
+        tmp[d++] = *(str+c);
+        ++c;
+    }
+
+    return tmp;
+}
+
+void opr_single(char * instr, char * oristr,int ln)
 {
     int index = 0;
+
+    int l = find_ep(instr,0,' ');
+    int r = find_sp(instr,l+1,' ');
+    int wsz = r-l;
+    char * incp = strcp(instr,l,r);
+    
     while(1)
     {
-        index = kmp(oristr+index,instr,isz,osz);
+        index = find_str(oristr,incp,index,r-l+1);
 
         if(index==-1) break;
 
         num_write(ln,index);
 
-        index += (isz-1);
+        index += wsz;
     }
+    
+    free(incp);
     return;
 }
 
-void opr_multi(char * instr, char * oristr,size_t isz,size_t osz,int ln)
+void opr_multi(char * instr, char * oristr,int ln,int wsz)
 {
-    int l = 0;
     bool ck = true;
+    int l,r;
+    l = r = 0;
+    int c =0;
     while(1)
-    {
-        int r = find_sp(oristr+l+1);
+    {   
+        l = find_ep(instr,r,' ');
+        r = find_sp(instr,l+1,' ');
+        char * incp = strcp(instr,l,r);
 
-        if(r==-1) break;
-
-        if(kmp(oristr,strcp(l,r),r-l+1,osz)==-1)
+        if(find_str(oristr,incp,0,r-l+1) == -1)
         {
-            ck=false;
+            ck = false;
+            free(incp);
             break;
-        };
+        }
 
-        l = r;        
+        free(incp);        
+
+        if(++c == wsz) break;
     }
 
     if(ck) num_write(ln,-1);
+    
 
     return;
 }
 
-void opr_regex(char * instr, char * oristr,size_t isz,size_t osz,int ln)
+void opr_regex(char * instr, char * oristr,int ln)
 {
-    int l = 0;
-    int r = find_sp(oristr+l+1);
-    int z = find_sp(oristr+r+1);
+    int l,r;
+    l = r = 0;
 
-    char * left = strcp(l,r);
-    char * right = strcp(r,z);
+    l = find_ep(instr,r,' ');
+    r = find_sp(instr,l+1,' ');
+    int wsz = r-l;
+    char * lcp = strcp(instr,l,r);
+    
+    l = find_ep(instr,r,' ');
+    r = find_sp(instr,l+1,' ');
+    char * rcp = strcp(instr,l,r);
+    
+    int lidx = find_str(oristr,lcp,0,wsz+1);
+    int ridx = find_str(oristr,rcp,lidx+wsz+1,r-l+1);
 
-    int lp = kmp(oristr,left,r-l+1,osz);
-    int rp = kmp(oristr+lp+r-l+1,osz);
-
-    bool ck = ((lp!=-1) && (rp!=-1));
+    bool ck = ((lidx!=-1) && (ridx!=-1));
   
     if(ck) num_write(ln,-1);
+
+    free(lcp);
+    free(rcp);
+
+    return;
+}
+
+void opr_sentence(char * instr, char * oristr,int ln)
+{
+    int l,r;
+    l = r = 0;
+    l = find_ep(instr,r,'*');
+    r = find_sp(instr,l+1,'*');
+
+    char * incp = strcp(instr,l,r);
+
+    int index= -1;
+
+    while(1)
+    {
+        index = find_str(oristr,incp,index+1,r-l+1);
+
+        if(index==-1) break;
+        
+        num_write(ln,index);
+    }
+
+    free(incp);
 
     return;
 }
@@ -64,31 +187,44 @@ void opr_regex(char * instr, char * oristr,size_t isz,size_t osz,int ln)
 void search(query input)
 {
     int off = 0;
-    for(int i=1; i<curline; ++i,lseek(IFD,off,SEEK_SET))
+    lseek(IFD,off,SEEK_SET);
+
+    for(int i=1; i<curline; ++i)
     {
         char * buf = (char*)malloc(sizeof(char)*(offsetsz[i]+2));
-        read(IFD,buf+1,offsetsz[i]);
+          
+        read(IFD,buf,offsetsz[i]);
 
-        for(int t =1; t<offsetsz[i]+1;++t) if(buf[t] == '\t' || buf[t] == '\n') buf[t] = ' ';
-        buf[offsetsz[i]+1] = '\n';
-        
-        switch(input.type)
+        buf[0] = ' ';
+        buf[offsetsz[i]] = ' '; 
+        buf[offsetsz[i]+1] = '\n';        
+              
+
+        if(input.tp != SENTENCE)
         {
-            case SINGLEWORD:
-            case SENTENCE:                
-                opr_single(input.wstr,buf,input.sz,offsetsz[i]+1,i);
-                break;
-            case MULTWORD:
-                opr_multi(input.wstr,buf,input.sz,offsetsz[i]+1,i);
-                break;            
-            case REGULAREXP:
-                opr_regex(input.wstr,buf,input.sz,offsetsz[i]+1,i);
-                break;
-            default:
-                //error
+            for(int t =1; t<offsetsz[i]+1;++t) if(buf[t] == '\t') buf[t] = ' ';
         }
 
-
+        switch(input.tp)
+        {
+            case SINGLEWORD:
+                opr_single(input.wstr,buf,i);
+                break;
+            case MULTWORD:
+                opr_multi(input.wstr,buf,i,input.wordsz);
+                break;            
+            case REGULAREXP:
+                opr_regex(input.wstr,buf,i);
+                break;
+            case SENTENCE:                
+                opr_sentence(input.wstr,buf,i);
+                break;
+            default:
+                break;
+                //error
+        }
+        
         off += offsetsz[i];
+        free(buf);
     }
 }

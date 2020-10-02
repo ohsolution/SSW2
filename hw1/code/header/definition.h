@@ -28,9 +28,10 @@ typedef int Qtype;
 
 typedef struct _query
 {
-    char * wstr;
-    int sz;
-    Qtype type;
+    char * wstr;    
+    int sz;    
+    int wordsz;    
+    Qtype tp;    
 } query;
 
 
