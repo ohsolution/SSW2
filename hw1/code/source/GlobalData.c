@@ -9,7 +9,6 @@ char const endl[1] = "\n";
 char const blank[1] = " ";
 
 size_t * offsetsz;
-Qtype * tyline;
 long long line = 1024;
 int max_v = 1024; 
 long long curline=1;

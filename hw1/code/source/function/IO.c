@@ -1,6 +1,5 @@
 #include "../../header/GlobalData.h"
 #include "../../header/definition.h"
-#include <stdio.h>
 
 void secure_open(int argc,char **argv)
 {
@@ -24,11 +23,6 @@ void secure_open(int argc,char **argv)
     }
 
     return;
-}
-
-void secure_write(int fd,char * str,size_t sz)
-{
-
 }
 
 int getsz(int ln)
@@ -87,7 +81,7 @@ void save_offset()
     offsetsz = (size_t *)malloc(sizeof(size_t)*(line));    
     char buf[max_v];
     int bl;
-    size_t spos =0;
+    size_t spos = 0;
 
     do
     {
@@ -124,7 +118,7 @@ void save_offset()
         */
 
     }while(bl==max_v);
-
+    ++offsetsz[1];
    return;
 }
 
@@ -146,18 +140,33 @@ query ConsoleInput(void)
     ret.wstr[spos++] = ' ';
     ret.tp = 0;
 
+    int star = 0;
+    int ldash = -1;
+    int rdash = -1;
+    int dash = 0;
+    int palse = 0;
+    bool wsign = false;
+
     do
     {
         bl = read(STDIN,ret.wstr+spos,sizeof(char)*max_v);
 
         for(int i=0;i<bl;++i,++spos)
         {
-            if(ret.wstr[spos]!=' ' && ret.wstr[spos]!='\t'&&ret.wstr[spos]!='\n' && ret.wstr[spos]!='*' && ret.wstr[spos]!='\"') wck=true;            
+            if(ret.wstr[spos]!=' ' && ret.wstr[spos]!='\t'&&ret.wstr[spos]!='\n' && ret.wstr[spos]!='*' && ret.wstr[spos]!='\"')
+            {
+                wck=true;
+                if(palse>=2 && wsz >=1) wsign = true;
+                palse = 0;
+            }
             else 
             {
-                wsz += wck;
+                if(wck) ++wsz;
+                ++palse;
                 wck=false;
             }
+
+            star += (ret.wstr[spos] == '*');
 
             ck |= (ret.wstr[spos] == '\n');
 
@@ -168,11 +177,12 @@ query ConsoleInput(void)
 
             if(ret.wstr[spos]=='\"') 
             {
-                ret.wstr[spos] = '*';
-                sck = !sck;
+                sck=false;
+                if(ldash == -1) ldash = spos;
+                else rdash = spos;
             }
 
-            if(ret.wstr[spos]=='\t' && sck) ret.wstr[spos] = ' '; 
+            if(ret.wstr[spos]=='\t' && sck) ret.wstr[spos] =' ';
 
             if(spos+1==sl) 
             {                
@@ -210,6 +220,40 @@ query ConsoleInput(void)
     ret.wstr[ret.sz-1] = '\n';
     ret.wordsz = wsz;
     if(!ret.tp) ret.tp = (ret.wordsz>1)+1;
+    if(ret.tp == REGULAREXP && (star!=1||wsz!=2)) ret.tp = WRONGQUERY;    
+    if(ret.tp==MULTWORD && wsign) ret.tp = WRONGQUERY;
+    if(dash && star) ret.tp = WRONGQUERY;
 
+    if(ret.tp==SENTENCE)
+    {
+        if(ldash==-1 || rdash==-1)
+        {
+            ret.tp = WRONGQUERY;
+        }
+        else
+        {
+            ret.wstr[ldash] = '*';
+            ret.wstr[rdash] = '*';
+            bool senck = true;
+            for(int i = ldash-1;i>=0;--i)
+            {
+                if(ret.wstr[i]!=' ' && ret.wstr[i]!='\t'&&ret.wstr[i]!='\n' && ret.wstr[i]!='*' && ret.wstr[i]!='\"')
+                {
+                    senck=false;
+                    break;
+                }   
+            }
+            for(int i = rdash+1;i<ret.sz;++i)
+            {
+                if(ret.wstr[i]!=' ' && ret.wstr[i]!='\t'&&ret.wstr[i]!='\n' && ret.wstr[i]!='*' && ret.wstr[i]!='\"')
+                {
+                    senck=false;
+                    break;
+                }   
+            }
+
+            if(!senck) ret.tp= WRONGQUERY;            
+        }    
+    }
     return ret;
 }

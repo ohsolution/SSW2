@@ -1,7 +1,6 @@
 #include "../../header/definition.h"
 #include "../../header/GlobalData.h"
 #include "../../header/FunctionHeader/IO.h"
-#include <stdio.h>
 
 bool match(char a,char b)
 {
@@ -36,7 +35,6 @@ int find_sp(char * str,int idx,char ch)
     while(*(str+idx)!='\n')
     {
         if(*(str+idx)==ch) return idx;
-
         ++idx;
     }
 
@@ -45,18 +43,18 @@ int find_sp(char * str,int idx,char ch)
 
 int find_str(char * ori, char * w,int lsz,int lp)
 {
-    int rsz= 0;
+    int t= 0;
 
-    while(*(ori+lsz) != '\n')
+    for(char * it = (ori+lsz) ; *it!='\n';++it)
     {
-        if(match(*(w+rsz),*(ori+lsz)))
+        bool ck =true;
+        for(char *lt = w,t=0; t<lp;++t,++lt)
         {
-            if(rsz == lp-1) return lsz-lp+1;
-            ++rsz;
+            if(match(*lt,*(it+t))) continue;
+            ck = false;
+            break;
         }
-        else rsz=0;
-    
-        ++lsz; 
+        if(ck) return it-ori;
     }
 
     return -1;
@@ -86,7 +84,7 @@ void opr_single(char * instr, char * oristr,int ln)
     int r = find_sp(instr,l+1,' ');
     int wsz = r-l;
     char * incp = strcp(instr,l,r);
-    
+
     while(1)
     {
         index = find_str(oristr,incp,index,r-l+1);
@@ -187,22 +185,24 @@ void opr_sentence(char * instr, char * oristr,int ln)
 void search(query input)
 {
     int off = 0;
-    lseek(IFD,off,SEEK_SET);
+    lseek(IFD,0,SEEK_SET);
 
     for(int i=1; i<curline; ++i)
     {
         char * buf = (char*)malloc(sizeof(char)*(offsetsz[i]+2));
-          
-        read(IFD,buf,offsetsz[i]);
-
+        
+        read(IFD,buf+1,offsetsz[i]+1);
         buf[0] = ' ';
         buf[offsetsz[i]] = ' '; 
         buf[offsetsz[i]+1] = '\n';        
-              
 
         if(input.tp != SENTENCE)
         {
-            for(int t =1; t<offsetsz[i]+1;++t) if(buf[t] == '\t') buf[t] = ' ';
+            for(int t =0; t<=offsetsz[i]+1;++t) 
+            {
+                if(buf[t] == '\t') buf[t] = ' ';
+                
+            }
         }
 
         switch(input.tp)
@@ -225,6 +225,7 @@ void search(query input)
         }
         
         off += offsetsz[i];
+        lseek(IFD,off,SEEK_SET); 
         free(buf);
     }
 }
