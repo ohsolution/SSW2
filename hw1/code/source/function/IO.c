@@ -255,5 +255,11 @@ query ConsoleInput(void)
             if(!senck) ret.tp= WRONGQUERY;            
         }    
     }
+
+    if(ret.tp == SENTENCE)
+    {
+        if(ret.wstr[ldash+1]==' ' || ret.wstr[ldash+1]=='\t') ret.wstr[ldash] = 17;
+        if(ret.wstr[rdash-1]==' ' || ret.wstr[rdash-1]=='\t') ret.wstr[rdash] = 17;
+    }
     return ret;
 }

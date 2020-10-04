@@ -3,6 +3,7 @@
 #include "../header/GlobalData.h"
 #include "../header/FunctionHeader/search.h"
 #include "../header/FunctionHeader/IO.h"
+#include <stdio.h>
 
 bool excute_query(void)
 {    

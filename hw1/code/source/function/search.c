@@ -12,6 +12,8 @@ bool match(char a,char b)
 
     if(a=='*') return (b==' ' || b=='\t');
 
+    //if(a==17) return true;
+
     return false;
 }
 
