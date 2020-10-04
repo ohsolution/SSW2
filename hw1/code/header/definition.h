@@ -26,7 +26,8 @@ typedef struct _query
 {
     char * wstr;    
     int sz;    
-    int wordsz;    
+    int wordsz;
+    int ldash,rdash;    
     Qtype tp;    
 } query;
 
