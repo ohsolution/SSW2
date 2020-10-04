@@ -12,8 +12,6 @@ bool match(char a,char b)
 
     if(a=='*') return (b==' ' || b=='\t');
 
-    //if(a==17) return true;
-
     return false;
 }
 
@@ -159,14 +157,17 @@ void opr_regex(char * instr, char * oristr,int ln)
     return;
 }
 
-void opr_sentence(char * instr, char * oristr,int ln)
+void opr_sentence(query input, char * oristr,int ln)
 {
     int l,r;
-    l = r = 0;
-    l = find_ep(instr,r,'*');
-    r = find_sp(instr,l+1,'*');
+    
+    l = input.ldash;
+    r = input.rdash;
+    bool lpad = false;;
+    if(l<0) {l*=-1;++l;lpad=true;}
+    if(r<0) {r*=-1;--r;}
 
-    char * incp = strcp(instr,l,r);
+    char * incp = strcp(input.wstr,l,r);
 
     int index= -1;
 
@@ -176,7 +177,7 @@ void opr_sentence(char * instr, char * oristr,int ln)
 
         if(index==-1) break;
         
-        num_write(ln,index);
+        num_write(ln,index-lpad);
     }
 
     free(incp);
@@ -219,7 +220,7 @@ void search(query input)
                 opr_regex(input.wstr,buf,i);
                 break;
             case SENTENCE:                
-                opr_sentence(input.wstr,buf,i);
+                opr_sentence(input,buf,i);
                 break;
             default:
                 break;
