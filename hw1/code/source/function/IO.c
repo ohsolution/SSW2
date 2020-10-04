@@ -255,5 +255,7 @@ query ConsoleInput(void)
             if(!senck) ret.tp= WRONGQUERY;            
         }    
     }
+
+    
     return ret;
 }
