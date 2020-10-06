@@ -8,11 +8,9 @@ bool excute_query(void)
 {    
     query input = ConsoleInput();          
 
-    if(input.tp == WRONGQUERY) return true;
-
     osz = -1;
-
-    search(input);    
+    
+    if(input.tp !=WRONGQUERY) search(input);
 
     free(input.wstr);
 
