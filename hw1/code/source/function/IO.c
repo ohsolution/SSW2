@@ -50,9 +50,9 @@ void to_str(int ln,int sz)
 
 void num_write(int ln,int index)
 {
-    if(ln == -1 && osz!=-1)
+    if(ln == -1)
     {
-        write(STDOUT,output,--osz);
+        if(osz!=-1) write(STDOUT,output,--osz);
         return;
     }
 

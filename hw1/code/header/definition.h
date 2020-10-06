@@ -31,8 +31,4 @@ typedef struct _query
     Qtype tp;    
 } query;
 
-
-
-
-
 #endif /* definition.h */
