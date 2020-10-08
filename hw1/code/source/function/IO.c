@@ -50,9 +50,9 @@ void to_str(int ln,int sz)
 
 void num_write(int ln,int index)
 {
-    if(ln == -1 && osz!=-1)
+    if(ln == -1)
     {
-        write(STDOUT,output,--osz);
+        if(osz!=-1) write(STDOUT,output,--osz);
         return;
     }
 
@@ -256,6 +256,17 @@ query ConsoleInput(void)
         }    
     }
 
+<<<<<<< HEAD
     
+=======
+    ret.ldash = ldash;
+    ret.rdash = rdash; 
+
+    if(ret.tp == SENTENCE)
+    {
+        if(ret.wstr[ldash+1]==' ' || ret.wstr[ldash+1]=='\t') ret.ldash *=-1;
+        if(ret.wstr[rdash-1]==' ' || ret.wstr[rdash-1]=='\t') ret.rdash *=-1;
+    }
+>>>>>>> 7a2caed274f058ebbfb1aa32ea5d148f8b38760a
     return ret;
 }

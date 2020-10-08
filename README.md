@@ -2,7 +2,7 @@
 
 ### 미구현
 
-- 콘솔 인풋 realloc 으로 딱맞게 query 구조체 str 로 설정 // 에러 존재 가능
-- kmp 매칭 구현
+- input 파일 앞 공백을 어떻게 처리해야하는지 세야되나 말아야 하나
+- 최대 인풋 라인 512 바이트 굳이 realloc 부분이 필요없긴 함
 
-``` int kmp(char * str, char * w,int pos) // return first idx matching ```
+
