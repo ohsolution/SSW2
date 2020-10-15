@@ -29,6 +29,7 @@ int execute(FILE * fp)
 	
 	char ** args = (char**)malloc(sizeof(char*)*sz);
 	char * str = malloc(sizeof(char)* sz);
+	str[0]= '\0';
 
 	char * pstr = str;
 	char * pch = strtok(cmd," ");
@@ -56,20 +57,17 @@ int execute(FILE * fp)
 		strcat(str,pad);
 	}
 	
-	printf("%s\n",pstr);
-
-	/*
 	if(fork()) waitpid(-1,NULL,WNOHANG);
 	else
 	{
 		execl("/bin/bash","/bin/bash","-c",str,NULL);
 		exit(0);
-	}*/
+	}
 	
 	EXIT:
 	free(args);
 	free(ptr);
-	free(pstr);
+	free(str);
 	return 1;
 }
 
@@ -78,7 +76,6 @@ int main(void)
 	int pid;
 	int fdcron, fdin, fdout, fderr;
 	
-	/*
 	if((pid = fork()) < 0)
 		exit(1);
 	
@@ -97,7 +94,7 @@ int main(void)
 	fdin = open("/dev/null", O_RDWR);
 	fdout = open("/dev/null", O_RDWR);
 	fderr = open("/dev/null", O_RDWR);
-	*/
+	
 
 
 	chdir("/");
