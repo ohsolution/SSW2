@@ -22,7 +22,7 @@ int query()
     char ** args = (char**)malloc(sizeof(char*)*sz);    
 
 
-    while(pch!=NULL)
+    while(pch)
     {
         args[c++] = pch;
         pch = strtok(NULL," ");

@@ -10,8 +10,6 @@
 #include <stdio.h>
 
 const unsigned int min = 60;
-const int max_v = 1e4+7;
-
 char pad[2] = " ";
 
 int execute(FILE * fp)
@@ -25,8 +23,7 @@ int execute(FILE * fp)
 	char * ptr = cmd;
 	int sz = strlen(cmd)-1;
 
-	cmd[sz] = '\0';
-	
+	cmd[sz] = '\0';	
 	char ** args = (char**)malloc(sizeof(char*)*sz);
 	char * str = malloc(sizeof(char)* sz);
 	str[0]= '\0';
@@ -94,8 +91,6 @@ int main(void)
 	fdin = open("/dev/null", O_RDWR);
 	fdout = open("/dev/null", O_RDWR);
 	fderr = open("/dev/null", O_RDWR);
-	
-
 
 	chdir("/");
 	struct tm* localtime(const time_t * timer);
@@ -106,7 +101,7 @@ int main(void)
 		
 		while(execute(fp));
 
-		sleep(10);
+		sleep(min);
 		fclose(fp);
 	}
 
