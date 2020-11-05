@@ -1,7 +1,7 @@
 # Makefile
 
-TARGET = w8
-OBJECT = w8
+TARGET = w9
+OBJECT = w9
 
 
 all : $(TARGET)
