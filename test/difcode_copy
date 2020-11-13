@@ -1,0 +1,116 @@
+3a4
+> 
+70,73c71
+< const int max_v = 1e3+7;
+< long long line = 512;
+< long long curline = 0;
+< int pad = 3;
+---
+> #define	RADIX	10
+75c73
+< char * mkline(int idx)
+---
+> int IntToChar(int value, char *buf)
+77c75,84
+<     char * tmp = malloc(sizeof(char)*pad);
+---
+> 	int _value = value;
+> 	int index = 0;
+> 	int i;
+> 	char temp;
+> 
+> 	while (_value) {
+> 		buf[index] = (_value % RADIX) + '0';
+> 		_value /= RADIX;
+> 		index++;
+> 	}
+79,93c86,90
+<     tmp[pad-1] = ' ';
+<     tmp[pad-2] = '|';
+<     tmp[pad-3] = ' ';
+< 
+<     for(int i=pad-4;i>=0;--i)
+<     {
+<         tmp[i] = (idx%10) +'0';
+<         idx/=10;
+<     }
+< 
+<     for(int i=0;i<pad;++i)
+<     {
+<         if(tmp[i]!='0') break;
+<         else tmp[i] = ' ';
+<     }
+---
+> 	for (i = 0; i < index / 2; i++) {
+> 		temp = buf[i];
+> 		buf[i] = buf[(index - 1) - i];
+> 		buf[(index - 1) -i] = temp;
+> 	}
+95c92
+<     return tmp;
+---
+> 	return 0;
+100,158c97
+< 
+<     char ** str = malloc(sizeof(char*)*line);
+<     int * stridx = malloc(sizeof(int)*line);
+<     int * isline = malloc(sizeof(int)*line);
+<     char buf[max_v];
+<     int bl;
+<     int realline=0;
+< 
+< 
+<     do
+<     {
+<         bl = read(ifd,buf,sizeof(buf));
+<         
+<         char * curstr = (char*)malloc(sizeof(char)*(max_v));
+<         int spos=0;
+<         
+<         for(int i = 0;i<bl;++i)
+<         {
+<             curstr[spos++] = buf[i];
+< 
+<             if(buf[i]=='\n'||i==bl-1)
+<             {  
+<                 realline += (buf[i]=='\n');
+<                 if(buf[i]=='\n') isline[curline] = realline;
+<                 else isline[curline] = 0;
+<                 stridx[curline] = spos;
+<                 str[curline++] = curstr;
+< 
+<                 if(curline == line) 
+<                 {
+<                     line *=2;
+<                     str = realloc(str,sizeof(char*)*line);
+<                     stridx = realloc(stridx,sizeof(int)*line);
+<                     isline = realloc(isline,sizeof(int)*line);
+<                 }
+<                 spos = 0;
+<                 curstr = (char*)malloc(sizeof(char)*(max_v));
+<             }
+<         }
+< 
+<     }while(bl==max_v);
+< 
+<     while(realline)
+<     {
+<         ++pad;
+<         realline/=10;
+<     }
+< 
+<     int ck = 1;
+<     int r= 1;
+< 
+<     for(int i=0 ; i<curline;++i)
+<     {
+<         if(ck) write(ofd,mkline(r++),pad);            
+<         write(ofd,str[i],stridx[i]);
+<         ck = !!isline[i];
+<     }
+< 
+<     return 0;
+---
+> 	return 0;
+159a99
+> 
