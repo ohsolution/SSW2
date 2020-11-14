@@ -67,11 +67,12 @@ int main () {
             sprintf(path2, "/bin/%s", arg2[0]);
 
             if(pipe(fd) == -1) exit(1);
+            memset(pipe,-1,sizeof(pipe);
 
             if(fork() == 0) 
             {                             
-                close(fd[1]);
                 dup2(fd[0],STDIN_FILENO);
+                for(int i=0;i<2;++i) if(fd[i]==-1) close(fd[i]);
                 execv(path2,arg2);                            
                 exit(0);
             }

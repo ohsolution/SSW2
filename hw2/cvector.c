@@ -2,7 +2,7 @@
 
 void cv_init(cvector * cv,int sz)
 {
-    cv->arr = malloc(sizeof(int) * sz);
+    cv->arr = calloc(sz,sizeof(int));
     cv->csz = 0;
     cv->tsz = sz;
 }

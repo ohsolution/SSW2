@@ -21,6 +21,7 @@ int invaild_checker(char ** argv);
 int parsecommand(char **argv,cvector * vsz,cvector * vtp);
 
 char cwd[1024];
+char path[512];
 
 int main() 
 {
@@ -28,7 +29,11 @@ int main()
     char *ret;
     getcwd(cwd,sizeof(cwd));
 
+    signal(SIGTSTP,SIG_IGN);
+    signal(SIGINT,SIG_IGN);
+    
     while (1) 
+
     {
         printf("mini> ");                   
         ret = fgets(cmdline, MAXLINE, stdin); 
@@ -44,6 +49,8 @@ void eval(char *cmdline)
     char buf[MAXLINE];   /* Holds modified command line */
     int bg;              /* Should the job run in bg or fg? */
     pid_t pid;           /* Process id */
+    pid_t pgid;
+
     cvector vsz,vtp;
     cv_init(&vsz,4); cv_init(&vtp,4);
 
@@ -56,72 +63,82 @@ void eval(char *cmdline)
     if(invaild_checker(argv) || parsecommand(argv,&vsz,&vtp)) 
     {
         fprintf(stderr,"mini: command not found\n");
-        goto EXIT;
+        cv_clear(&vsz);
+        cv_clear(&vtp);
+        return;
     }
 
-    //cv_print(&vsz);
-    //cv_print(&vtp);
-
-    int cn = cv_size(&vsz);
+    int cn = cv_size(&vsz);    
     int c=0;
+    int fd[2];
+    int bfd=0;
 
-    if(builtin_command(argv)) goto EXIT;
+    if(builtin_command(argv))
+    {
+        cv_clear(&vsz);
+        cv_clear(&vtp);
+        return;
+    }    
 
-    int fd[MAXARGS][2];
+    if((pid=fork()))
+    {
+        cv_clear(&vsz);
+        cv_clear(&vtp);    
+        if(!bg) waitpid(pid,NULL,0);
+        return;
+    }
 
-    for(int i=0;i<cn-1;++i,++c)
+    setpgrp();
+
+    signal(SIGTSTP,SIG_DFL);
+    signal(SIGINT,SIG_DFL);
+    
+
+    for(int i=0;i<cn;++i,++c)
     {
         char ** cargv = malloc(sizeof(char*) * vsz.arr[i]);
         
         for(int j = 0; j< vsz.arr[i] ; ++j) cargv[j] = argv[c++];
 
-        if (!builtin_command(cargv)) 
-        { 
-            /* Child runs user job */
-            if ((pid = fork()) == 0) 
-            {
-                if (execv(argv[0], argv) < 0) 
-                {
-                    //fprintf(stderr,"mini: command not found.\n");
-                    exit(0);
-                }
-            }
+        pipe(fd);
+
+        pid = fork();
+
+        if (!pid) 
+        {
             
-            int status;
-            if (waitpid(pid, &status, 0) < 0) printf("waitfg: waitpid error");	        
-        }
-
-        free(cargv);
-    }
-
-    if (!builtin_command(argv)) 
-    { 
-        /* Child runs user job */
-        if ((pid = fork()) == 0) 
-        {
-            if (execv(argv[0], argv) < 0) 
+            if(i) setpgid(pid,pgid);            
+            else 
             {
-                //fprintf(stderr,"mini: command not found.\n");
-                exit(0);
+                setpgid(pid,0);
+                pgid = pid;
             }
+
+            dup2(bfd,0);
+
+            if(i != cn-1) dup2(fd[1],STDOUT_FILENO);                                
+                                    
+            close(fd[0]);
+
+            sprintf(path,"/bin/%s",cargv[0]);
+            execv(path,cargv);
+
+
+            exit(0);            
+        }
+        else
+        {
+            waitpid(pid,NULL,0);          
+            close(fd[1]);
+            bfd = fd[0];            
         }
 
-        /* Parent waits for foreground job to terminate */
-        if (!bg) 
-        {
-            int status;
-            if (waitpid(pid, &status, 0) < 0) printf("waitfg: waitpid error");	
-        }
-        else printf("%d %s", pid, cmdline);
+        free(cargv);                    
     }
-    
-    EXIT:
+        
     cv_clear(&vsz);
     cv_clear(&vtp);
-
-
-
-    return;
+    exit(0);
 }
 
 int builtin_command(char **argv) 
@@ -141,8 +158,8 @@ int builtin_command(char **argv)
 
         chdir(argv[1]);
 
-        getcwd(cwd,sizeof(cwd)); // for check
-        printf("%s\n",cwd); // for check
+        //getcwd(cwd,sizeof(cwd)); // for check
+        //printf("%s\n",cwd); // for check
 
         err_check("cd");         
 
