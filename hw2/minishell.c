@@ -21,7 +21,21 @@ int invaild_checker(char ** argv);
 int parsecommand(char **argv,cvector * vsz,cvector * vtp);
 
 char cwd[1024];
-char path[512];
+
+pid_t ppid;           
+pid_t mpgid;
+
+void killing_zombie_handler(int sig)
+{
+    signal(SIGTTOU,SIG_IGN);
+    tcsetpgrp(STDOUT_FILENO,mpgid);
+    int st = 0;
+
+    pid_t zpid = waitpid(-1,&st,WNOHANG|WUNTRACED);
+    if(WIFSTOPPED(st)) killpg(getpgid(zpid),SIGKILL);
+    
+    signal(SIGTTOU,SIG_DFL);
+}
 
 int main() 
 {
@@ -29,17 +43,28 @@ int main()
     char *ret;
     getcwd(cwd,sizeof(cwd));
 
+    mpgid = getpgid(getpid());
+    
     signal(SIGTSTP,SIG_IGN);
     signal(SIGINT,SIG_IGN);
+    signal(SIGCHLD,killing_zombie_handler);
     
     while (1) 
+    {  
+        int st=0;
 
-    {
         printf("mini> ");                   
         ret = fgets(cmdline, MAXLINE, stdin); 
         if (feof(stdin) || ret == NULL) exit(0);
-
-        eval(cmdline);
+                
+        pid_t zpid = waitpid(-1,&st,WNOHANG|WUNTRACED);
+        if(WIFSTOPPED(st)) killpg(getpgid(zpid),SIGKILL);
+        
+        eval(cmdline);    
+        
+        zpid = waitpid(-1,&st,WNOHANG|WUNTRACED);
+        if(WIFSTOPPED(st)) killpg(getpgid(zpid),SIGKILL);    
+        
     } 
 }
 
@@ -48,8 +73,8 @@ void eval(char *cmdline)
     char *argv[MAXARGS]; /* Argument list execve() */
     char buf[MAXLINE];   /* Holds modified command line */
     int bg;              /* Should the job run in bg or fg? */
-    pid_t pid;           /* Process id */
-    pid_t pgid;
+    
+    pid_t pid;
 
     cvector vsz,vtp;
     cv_init(&vsz,4); cv_init(&vtp,4);
@@ -64,7 +89,7 @@ void eval(char *cmdline)
     {
         fprintf(stderr,"mini: command not found\n");
         cv_clear(&vsz);
-        cv_clear(&vtp);
+        cv_clear(&vtp); 
         return;
     }
 
@@ -80,25 +105,48 @@ void eval(char *cmdline)
         return;
     }    
 
-    if((pid=fork()))
+    if((ppid=fork()))
     {
         cv_clear(&vsz);
         cv_clear(&vtp);    
-        if(!bg) waitpid(pid,NULL,0);
+        if(!bg) waitpid(ppid,NULL,0);
         return;
     }
-
+    
+    //printf("%d\n",tcgetpgrp(STDIN_FILENO));
     setpgrp();
+    //printf("%d\n",tcgetpgrp(STDOUT_FILENO));
+    signal(SIGTTOU,SIG_IGN);
+    tcsetpgrp(STDOUT_FILENO,getpgid(getpid()));
 
+    
     signal(SIGTSTP,SIG_DFL);
     signal(SIGINT,SIG_DFL);
-    
 
     for(int i=0;i<cn;++i,++c)
     {
-        char ** cargv = malloc(sizeof(char*) * vsz.arr[i]);
+        int saz = vsz.arr[i] - (vtp.arr[i]/3) * 2;
+        int pc = c;
+
+        char ** command = malloc(sizeof(char*) * (saz+1));
         
-        for(int j = 0; j< vsz.arr[i] ; ++j) cargv[j] = argv[c++];
+        char * f1 = NULL;
+        char * f2 = NULL;
+
+        for(int j = 0; c-pc< vsz.arr[i]; ++j)
+        {
+            int x = cmap(argv[c]);
+            if(x >= 0) command[j] = argv[c++];
+            else 
+            {
+                ++c;
+                if(f1) f2 = argv[c++];
+                else f1 = argv[c++];
+                --j;
+            }
+        }
+
+        command[saz] = NULL;
 
         pipe(fd);
 
@@ -106,24 +154,59 @@ void eval(char *cmdline)
 
         if (!pid) 
         {
+            char path[512];
             
-            if(i) setpgid(pid,pgid);            
-            else 
-            {
-                setpgid(pid,0);
-                pgid = pid;
-            }
-
             dup2(bfd,0);
 
             if(i != cn-1) dup2(fd[1],STDOUT_FILENO);                                
                                     
             close(fd[0]);
 
-            sprintf(path,"/bin/%s",cargv[0]);
-            execv(path,cargv);
+            int tp = vtp.arr[i];
 
+            if(tp == 4 || tp == 5) // output redirection
+            {
+                tp -=4;                
+                int ofd = open(f1,(tp*O_APPEND)|O_WRONLY| O_CREAT,0644);                
+                dup2(ofd,STDOUT_FILENO);
+            }
+            else if(tp==3) // input redirection
+            {
+                int ifd = open(f1,O_RDONLY);
+                dup2(ifd,STDIN_FILENO);
+            }
+            else if(tp==7) // both redirection
+            {
+                int ifd = open(f1,O_RDONLY);
+                int ofd = open(f2,O_WRONLY| O_CREAT,0644);
 
+                dup2(ifd,STDIN_FILENO);
+                dup2(ofd,STDOUT_FILENO);
+            }
+            
+
+            int ctp = cmap(command[0]);
+
+            set_default();
+
+            if(ctp >10) // exec bin
+            {
+                if(ctp >12) sprintf(path,"/usr/bin/%s",command[0]);    
+                else sprintf(path,"/bin/%s",command[0]);    
+                                                                             
+                execv(path,command);                            
+            }
+            else if(ctp==10) // exec path
+            {
+                sprintf(path,"%s",command[0]);
+                execv(path,command);                
+            }
+            else // exec implement
+            {
+                ;
+            }
+
+            err_check(command[0]);
             exit(0);            
         }
         else
@@ -133,11 +216,13 @@ void eval(char *cmdline)
             bfd = fd[0];            
         }
 
-        free(cargv);                    
+        free(command);                    
     }
         
     cv_clear(&vsz);
     cv_clear(&vtp);
+    tcsetpgrp(STDOUT_FILENO,mpgid);
+    
     exit(0);
 }
 
@@ -147,10 +232,12 @@ int builtin_command(char **argv)
     
     if(tmp == 1) //EXIT
     {
+        set_default();
         fprintf(stderr,"exit\n");
         int n = 0;
         if(argv[1]) n = atoi(argv[1]); 
-        exit(n);        
+        exit(n);
+        err_check("exit");        
     }
     else if(tmp == 2) // CD
     {

@@ -11,6 +11,8 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <errno.h>
+#include <fcntl.h>
+
 
 /* set macro */
 #define MAXARGS   128

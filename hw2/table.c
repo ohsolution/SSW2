@@ -28,11 +28,11 @@ int cmap(char * str)
 
     else if(strlen(str) >= 2 && str[0] == '.' && str[1] == '/') return 10; // path executable
 
-    /* bin command */
+    /* bin command 11 ~ 16*/
 
     else if(!strcmp(str,"ls")) return 11;
-    else if(!strcmp(str,"man")) return 12;
-    else if(!strcmp(str,"grep")) return 13;
+    else if(!strcmp(str,"grep")) return 12;
+    else if(!strcmp(str,"man")) return 13;     
     else if(!strcmp(str,"sort")) return 14;
     else if(!strcmp(str,"awk")) return 15;
     else if(!strcmp(str,"bc")) return 16;

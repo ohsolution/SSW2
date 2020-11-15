@@ -67,7 +67,7 @@ int main () {
             sprintf(path2, "/bin/%s", arg2[0]);
 
             if(pipe(fd) == -1) exit(1);
-            memset(pipe,-1,sizeof(pipe);
+            memset(pipe,-1,sizeof(pipe));
 
             if(fork() == 0) 
             {                             
@@ -137,7 +137,14 @@ int main () {
             }
             arg[num] = NULL;
 
-            sprintf(path, "/bin/%s", arg[0]);
+            for(int i=0;arg[i];++i)
+            {
+                int c =-1;
+                while(arg[i][++c] !='\0') printf("%c",arg[i][c]);
+                printf("\n");
+            }            
+
+            sprintf(path, "/usr/bin/%s", arg[0]);
         
             if (fork() == 0) {
                 execv(path, arg);
