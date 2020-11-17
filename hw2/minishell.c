@@ -25,6 +25,13 @@ char cwd[1024];
 pid_t ppid;           
 pid_t mpgid;
 
+void ign_handler(int sig)
+{
+    if(getppid() == mpgid) killpg(getpgid(getpid()),SIGKILL);
+    
+    exit(0);
+}
+
 void killing_zombie_handler(int sig)
 {
     signal(SIGTTOU,SIG_IGN);
@@ -113,15 +120,17 @@ void eval(char *cmdline)
         return;
     }
     
-    //printf("%d\n",tcgetpgrp(STDIN_FILENO));
-    setpgrp();
-    //printf("%d\n",tcgetpgrp(STDOUT_FILENO));
-    signal(SIGTTOU,SIG_IGN);
-    tcsetpgrp(STDOUT_FILENO,getpgid(getpid()));
-
     
+    setpgrp();
+    
+    if(!bg)
+    {
+        signal(SIGTTOU,SIG_IGN);
+        tcsetpgrp(STDOUT_FILENO,getpgid(getpid()));
+    }
+
     signal(SIGTSTP,SIG_DFL);
-    signal(SIGINT,SIG_DFL);
+    signal(SIGINT,ign_handler);
 
     for(int i=0;i<cn;++i,++c)
     {
@@ -173,7 +182,7 @@ void eval(char *cmdline)
             else if(tp==3) // input redirection
             {
                 int ifd = open(f1,O_RDONLY);
-                dup2(ifd,STDIN_FILENO);
+                dup2(ifd,STDIN_FILENO);                
             }
             else if(tp==7) // both redirection
             {
@@ -203,7 +212,8 @@ void eval(char *cmdline)
             }
             else // exec implement
             {
-                ;
+                sprintf(path,"%s/%s",cwd,command[0]);                
+                execv(path,command);
             }
 
             err_check(command[0]);
@@ -221,7 +231,8 @@ void eval(char *cmdline)
         
     cv_clear(&vsz);
     cv_clear(&vtp);
-    tcsetpgrp(STDOUT_FILENO,mpgid);
+
+    if(!bg) tcsetpgrp(STDOUT_FILENO,mpgid);
     
     exit(0);
 }
