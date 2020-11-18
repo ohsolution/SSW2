@@ -48,7 +48,7 @@ int main()
 {
     char cmdline[MAXLINE]; /* Command line */
     char *ret;
-    getcwd(cwd,sizeof(cwd));
+    getcwd(cwd,sizeof(cwd)); // get bin file location
 
     mpgid = getpgid(getpid());
     
@@ -123,7 +123,7 @@ void eval(char *cmdline)
     
     setpgrp();
     
-    if(!bg)
+    if(!bg) // swap session ground 
     {
         signal(SIGTTOU,SIG_IGN);
         tcsetpgrp(STDOUT_FILENO,getpgid(getpid()));
@@ -182,6 +182,11 @@ void eval(char *cmdline)
             else if(tp==3) // input redirection
             {
                 int ifd = open(f1,O_RDONLY);
+                if(ifd==-1) 
+                {
+                    fprintf(stderr,"mini: No such file or directory\n");
+                    exit(1);
+                }
                 dup2(ifd,STDIN_FILENO);                
             }
             else if(tp==7) // both redirection
@@ -255,10 +260,6 @@ int builtin_command(char **argv)
         set_default();
 
         chdir(argv[1]);
-
-        //getcwd(cwd,sizeof(cwd)); // for check
-        //printf("%s\n",cwd); // for check
-
         err_check("cd");         
 
         return 1;
@@ -305,18 +306,20 @@ int invaild_checker(char ** argv)
     int c = -1;
     while(argv[++c]);
 
-    if(cmap(argv[0]) <= 0 || cmap(argv[c-1]) < -1) return 1;
+    if(cmap(argv[0]) <= 0 || cmap(argv[c-1]) < -1) return 1; // check first,last is vaild
 
     for(int i=0; i< c-1; ++i)
     {
-        if(cmap(argv[i]) == -2 && cmap(argv[i+1]) <= 0) return 1;
-        if(cmap(argv[i]) < 0 && cmap(argv[i+1]) < 0) return 1;
+        if(cmap(argv[i]) == -2 && cmap(argv[i+1]) <= 0) return 1; // check pipe nxt is command
+        if(cmap(argv[i]) < 0 && cmap(argv[i+1]) < 0) return 1;   
     }
 
-    return 0;
+    return 0; // vaild
 }
 
-int parsecommand(char **argv,cvector * vsz,cvector * vtp)
+
+/* tokenizing command by command and save each token size and type */
+int parsecommand(char **argv,cvector * vsz,cvector * vtp) 
 {
     int sz = 0;
     int tp = 0;

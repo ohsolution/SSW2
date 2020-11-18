@@ -10,17 +10,17 @@ pa2:
 head:
 	gcc -o head head.c errhandler.c
 cat:
-	gcc -o head cat.c errhandler.c
+	gcc -o cat cat.c errhandler.c
 mv:
-	gcc -o head mv.c errhandler.c
+	gcc -o mv mv.c errhandler.c
 rm:
-	gcc -o head rm.c errhandler.c
+	gcc -o rm rm.c errhandler.c
 pwd:
-	gcc -o head pwd.c errhandler.c
+	gcc -o pwd pwd.c errhandler.c
 cp:
-	gcc -o head cp.c errhandler.c
+	gcc -o cp cp.c errhandler.c
 tail:
-	gcc -o head tail.c errhandler.c cvector.c
+	gcc -o tail tail.c errhandler.c cvector.c
 
 clean:
 	rm $(TARGET)
