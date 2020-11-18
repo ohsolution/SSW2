@@ -34,7 +34,7 @@ void err_check(char * str)
         break;
 
     default:
-        printf("%s: Error occurred: %d\n",str,errno);
+        printf("%s: Error occurred: <%d>\n",str,errno);
         break;
     }
 
