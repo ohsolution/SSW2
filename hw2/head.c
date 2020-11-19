@@ -28,7 +28,9 @@ int main(int argc,char * argv[])
     
     while((read = getline(&line,&line_sz,(inf?inf:stdin)))!=-1 && otk--) printf("%s",line);        
     
+    if(inf) fclose(inf);
     err_check("head");
+    
     
     return 0;
 }

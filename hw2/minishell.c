@@ -205,6 +205,15 @@ void eval(char *cmdline)
 
             if(ctp >10) // exec bin
             {
+                if(ctp == 15) // awk handling
+                {
+                    for(int i=0;i<saz;++i) 
+                    {
+                        int idx = -1;
+                        while(command[i][++idx]) if(command[i][idx]=='\'') command[i][idx] = '\"';                     
+                    }
+                }
+
                 if(ctp >12) sprintf(path,"/usr/bin/%s",command[0]);    
                 else sprintf(path,"/bin/%s",command[0]);    
                                                                              
@@ -216,7 +225,7 @@ void eval(char *cmdline)
                 execv(path,command);                
             }
             else // exec implement
-            {
+            {                
                 sprintf(path,"%s/%s",cwd,command[0]);                
                 execv(path,command);
             }

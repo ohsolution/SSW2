@@ -12,9 +12,12 @@ int main(int argc,char * argv[])
     char * line = NULL;
     size_t line_sz = 0;
     ssize_t read;
-    
-    while((read = getline(&line,&line_sz,(inf?inf:stdin)))!=-1) printf("%s",line);        
-    
+
+    if(inf)
+    {
+        while((read = getline(&line,&line_sz,(inf?inf:stdin)))!=-1) printf("%s",line);            
+        fclose(inf);
+    }
     err_check("cat");    
     
     return 0;
