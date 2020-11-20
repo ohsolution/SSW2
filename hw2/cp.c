@@ -23,7 +23,7 @@ int main(int argc,char * argv[])
         if(errno)
         {
             err_check("cp");
-            close(ifd);
+            if(ifd != -1) close(ifd);
             return 0;
         }
  
@@ -42,9 +42,11 @@ int main(int argc,char * argv[])
         {            
             DIR * dcheck = opendir(argv[2]);
 
-            if(errno)
+            if(errno == EACCES)
             {
                 err_check("cp");
+                if(ifd != -1) close(ifd);
+                if(dcheck) closedir(dcheck);
                 return 0;
             }
 
@@ -55,7 +57,8 @@ int main(int argc,char * argv[])
             if(dcheck) closedir(dcheck);
         }
         
-    
+        set_default();
+
         if(ifd == -1) ;
         else 
         {
@@ -66,7 +69,7 @@ int main(int argc,char * argv[])
         if(ifd != -1) close(ifd);
         if(ofd !=-1) close(ofd);
     }
-    
+       
     err_check("cp");
     return 0;
 }

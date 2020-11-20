@@ -33,32 +33,45 @@ int main(int argc,char * argv[])
     {
         int usz=0;
         cvector vsz;
-        cv_init(&vsz,otk+1);
-        vsz.arr[0] = 0;
-        ++p;
+        cv_init(&vsz,otk);
+        int c = 0;
         
         while((read = getline(&line,&line_sz,inf))!=-1)
-        {
+        {            
             if(!read) break;
-            usz += read;
+            ++c;
             vsz.arr[p] = usz;
-            if(++p==otk+1) p = 0;
+            usz += read;            
+            if(++p==otk) p = 0;
         }
 
-        for(int i=p;i<otk+1;++i)
+        if(c>=otk)
+        {            
+            for(int i=p;i<otk;++i)
+            {
+                fseek(inf,vsz.arr[i],0);
+                getline(&line,&line_sz,inf);
+                printf("%s",line);
+            }
+
+            for(int i=0;i<p;++i)
+            {
+                fseek(inf,vsz.arr[i],0);
+                getline(&line,&line_sz,inf);
+                printf("%s",line);
+            }
+        }
+        else
         {
-            fseek(inf,vsz.arr[i],0);
-            getline(&line,&line_sz,inf);
-            printf("%s",line);
+            for(int i=0;i<p;++i)
+            {
+                fseek(inf,vsz.arr[i],0);
+                getline(&line,&line_sz,inf);
+                printf("%s",line);
+            }
         }
-
-        for(int i=0;i<p-1;++i)
-        {
-            fseek(inf,vsz.arr[i],0);
-            getline(&line,&line_sz,inf);
-            printf("%s",line);
-        }
-
+        
+        cv_clear(&vsz);
         if(inf) fclose(inf);
     }
     else

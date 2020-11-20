@@ -18,7 +18,7 @@ int main(int argc,char * argv[])
         if(errno)
         {
             err_check("mv");
-            close(ifd);
+            if(ifd != -1) close(ifd);
             return 0;
         }
  
@@ -39,6 +39,8 @@ int main(int argc,char * argv[])
 
             if(errno == EACCES)
             {
+                if(ifd!=-1) close(ifd);
+                if(dcheck) closedir(dcheck);
                 err_check("mv");
                 return 0;
             }
