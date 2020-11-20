@@ -1,0 +1,12 @@
+-rw-r--r--  1 ohhaeseong ohhaeseong  1462 11월 19 14:51 cp.c
+-rw-r--r--  1 ohhaeseong ohhaeseong   174 11월 17 17:17 rm.c
+-rw-r--r--  1 ohhaeseong ohhaeseong  1830 11월 18 18:09 tail.c
+-rw-r--r--  1 ohhaeseong ohhaeseong   192 11월 17 16:46 pwd.c
+-rw-r--r--  1 ohhaeseong ohhaeseong   438 11월 19 14:02 cat.c
+-rw-r--r--  1 ohhaeseong ohhaeseong   445 11월 12 16:04 cvector.h
+-rw-r--r--  1 ohhaeseong ohhaeseong   683 11월 18 17:07 head.c
+-rw-r--r--  1 ohhaeseong ohhaeseong   750 11월 19 14:22 errhandler.c
+-rw-r--r--  1 ohhaeseong ohhaeseong   846 11월 18 18:15 cvector.c
+-rw-rw-r--  1 ohhaeseong ohhaeseong  8377 11월 19 12:44 minishell.c
+-rwxr-xr-x  1 ohhaeseong ohhaeseong 12856 11월 19 15:02 cat
+-rwxr-xr-x  1 ohhaeseong ohhaeseong 13032 11월 19 15:02 cp

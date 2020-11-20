@@ -4,12 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef struct _node
-{
-    int v;    
-}node;
-
-
 typedef struct _cvector
 {
     int csz;

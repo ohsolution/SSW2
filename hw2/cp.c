@@ -11,6 +11,21 @@ int main(int argc,char * argv[])
     else if(argc==2) fprintf(stderr,"cp: missing destination file operand after %s\n",argv[1]);   
     else
     {
+
+        int ifd,ofd,ril;
+        ifd = ofd = -1;
+        char buf[1024];
+
+        set_default();
+
+        ifd = open(argv[1],O_RDONLY);
+
+        if(errno)
+        {
+            err_check("cp");
+            close(ifd);
+            return 0;
+        }
  
         int d = -1;
         while(argv[1][++d]);
@@ -27,7 +42,7 @@ int main(int argc,char * argv[])
         {            
             DIR * dcheck = opendir(argv[2]);
 
-            if(errno == EACCES)
+            if(errno)
             {
                 err_check("cp");
                 return 0;
@@ -40,13 +55,6 @@ int main(int argc,char * argv[])
             if(dcheck) closedir(dcheck);
         }
         
-        int ifd,ofd,ril;
-        ifd = ofd = -1;
-        char buf[1024];
-
-        set_default();
-
-        ifd = open(argv[1],O_RDONLY);
     
         if(ifd == -1) ;
         else 

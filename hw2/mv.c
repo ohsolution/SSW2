@@ -11,6 +11,16 @@ int main(int argc,char * argv[])
     else if(argc==2) fprintf(stderr,"mv: missing destination file operand after %s\n",argv[1]);   
     else
     {
+        set_default();
+
+        int ifd = open(argv[1],O_RDONLY);
+
+        if(errno)
+        {
+            err_check("mv");
+            close(ifd);
+            return 0;
+        }
  
         int d = -1;
         while(argv[1][++d]);

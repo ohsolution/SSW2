@@ -105,12 +105,12 @@ void eval(char *cmdline)
     int fd[2];
     int bfd=0;
 
-    if(builtin_command(argv))
+    if(!bg && builtin_command(argv))
     {
         cv_clear(&vsz);
         cv_clear(&vtp);
         return;
-    }    
+    }
 
     if((ppid=fork()))
     {
@@ -119,8 +119,7 @@ void eval(char *cmdline)
         if(!bg) waitpid(ppid,NULL,0);
         return;
     }
-    
-    
+        
     setpgrp();
     
     if(!bg) // swap session ground 
@@ -131,6 +130,14 @@ void eval(char *cmdline)
 
     signal(SIGTSTP,SIG_DFL);
     signal(SIGINT,ign_handler);
+
+    if(cmap(argv[0]) < 3) // built-in background
+    {
+        cv_clear(&vsz);
+        cv_clear(&vtp);
+        exit(0);
+    }
+
 
     for(int i=0;i<cn;++i,++c)
     {
@@ -230,7 +237,7 @@ void eval(char *cmdline)
                 execv(path,command);
             }
 
-            err_check(command[0]);
+            //err_check(command[0]);
             exit(0);            
         }
         else
