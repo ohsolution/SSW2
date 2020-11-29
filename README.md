@@ -1,4 +1,3 @@
-# SystemSW2_HW
 
 ### 미구현
 

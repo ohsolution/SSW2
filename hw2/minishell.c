@@ -26,9 +26,9 @@ pid_t ppid;
 pid_t mpgid;
 
 void ign_handler(int sig)
-{
-    if(getppid() == mpgid) killpg(getpgid(getpid()),SIGKILL);
-    
+{    
+
+    if(getpid() == ppid) return;
     exit(0);
 }
 
@@ -129,6 +129,7 @@ void eval(char *cmdline)
     }
 
     signal(SIGTSTP,SIG_DFL);
+    //signal(SIGINT,SIG_DFL);
     signal(SIGINT,ign_handler);
 
     if(cmap(argv[0]) < 3) // built-in background
