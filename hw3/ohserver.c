@@ -71,14 +71,18 @@ void * client_manager(void *arg)
     /* handle opr */
     while((n = read(client_fd,buf,MAX_LINE)) > 0)
     {
-        write(STDOUT_FILENO,buf,n);
+        //write(STDOUT_FILENO,buf,n);
 
         bool inv = false;
+        int spcheck = 0;
         for(int i=0;i<n;++i)
         {
+            spcheck += buf[i]==' ';
             if((buf[i]>='0' && buf[i] <='9') || (buf[i]=='\n' || buf[i]=='\0' || buf[i] == ' ')) continue;
             inv = true;
         }
+
+        if(spcheck != 2) inv = true;
 
         if(inv)
         {
@@ -88,7 +92,7 @@ void * client_manager(void *arg)
 
         query q = parsing(buf,n);
 
-        printf("user : %d , action : %d, data : %d\n",q.user,q.action,q.data);
+        //printf("user : %d , action : %d, data : %d\n",q.user,q.action,q.data);
 
         if(terminate(q))
         {            
