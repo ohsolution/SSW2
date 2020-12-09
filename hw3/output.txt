@@ -1,0 +1,6 @@
+Reservation failed
+Logout failed
+Reservation check failed
+Login success
+Reservation check failed
+Reservation failed

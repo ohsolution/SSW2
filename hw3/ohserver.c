@@ -5,10 +5,11 @@
 #include <pthread.h>
 #include <sys/select.h>
 #include <stdio.h>
+#include <string.h>
 
 #define MAX_SEATS 256
-#define MAX_CLIENT 1024
-#define MAX_LINE 256
+#define MAX_CLIENT 2
+#define MAX_LINE 1024
 
 /* static data define */
 typedef enum _ACTION
@@ -18,8 +19,13 @@ typedef enum _ACTION
     CHECK_RESERVATION,
     CANCLE_RESERVATION,
     LOGOUT
-    //TERMINATE    
 }ACTION;
+
+typedef enum _bool
+{
+    false,
+    true
+}bool;
 
 typedef struct _query 
 {
@@ -35,77 +41,99 @@ typedef struct _seat
 } seat;
 
 pthread_mutex_t overmutex;
+pthread_mutex_t loginmutex;
 seat arr[MAX_SEATS];
 pthread_t tid[MAX_CLIENT];
 int checker[MAX_CLIENT];
-int upwd[MAX_CLIENT];
+int user_pw[MAX_CLIENT];
+int user_ck[MAX_CLIENT];
 
 /* tool function define*/
-int invalid(query q);
+bool invalid(query q){return ((q.user < 0 || q.user > 1023) || (q.action < 1 || q.action > 5) || q.data==-1);}
+bool terminate(query q){return !(q.action || q.data || q.user);}
 
-query parsing(char str[]);
-
-int login(query q);
-int rev(query q);
-void check_rev(query q,char str[]);
-int cancle_rev(query q);
-int logout(query q);
-
+query parsing(char str[],int n);
+bool login(query q,int id,int cfd);
+void rev(query q,int cfd);
+void check_rev(query q,int cfd);
+void cancle_rev(query q,int cfd);
+bool logout(query q,int id,int cfd);
 
 /* thread movement */
 void * client_manager(void *arg)
 {
     int client_fd = *((int *)arg);
-    int n;
+    ssize_t n;
     char buf[MAX_LINE];
-    char ret;
-
-    /* login */
-    while((n = read(client_fd,buf,MAX_LINE)) > 0)
-    {
-        query q = parsing(buf);
-
-        if(invaild(q)) 
-        {
-            // send invalid
-            continue;
-        }
-
-        int ret = login(q);
-
-        if(ret)
-        {
-            break;
-        }
-        else
-        {
-
-        }
-    }
+    int ret;
+    int id = -1;
 
     /* handle opr */
     while((n = read(client_fd,buf,MAX_LINE)) > 0)
     {
-        query q = parsing(buf);
+        write(STDOUT_FILENO,buf,n);
 
-        if(invaild(q)) 
+        bool inv = false;
+        for(int i=0;i<n;++i)
         {
-            //send invalid
+            if((buf[i]>='0' && buf[i] <='9') || (buf[i]=='\n' || buf[i]=='\0' || buf[i] == ' ')) continue;
+            inv = true;
+        }
+
+        if(inv)
+        {
+            write(client_fd,"6",2);
+            continue;
+        } 
+
+        query q = parsing(buf,n);
+
+        printf("user : %d , action : %d, data : %d\n",q.user,q.action,q.data);
+
+        if(terminate(q))
+        {            
+            if(id != -1) 
+            {
+                q.user = id;
+                logout(q,id,client_fd);
+            }
+
+            write(client_fd,"7 256",6);
+            break;
+        }
+        else if(invalid(q)) 
+        {
+            write(client_fd,"6",2);
+            continue;
+        }
+
+        if((id!=-1 && id!=q.user) || (id == -1 && q.action != LOGIN))
+        {
+            char tmp[30];
+            int t = sprintf(tmp,"%d -1",q.action)+1;
+            write(client_fd,tmp,t);
             continue;
         }
 
         switch(q.action)
         {
+            case LOGIN:
+                if(login(q,id,client_fd)) id = q.user;
+                break;
             case RESERVE:
-            break;
+                rev(q,client_fd);
+                break;
             case CHECK_RESERVATION:
+                check_rev(q,client_fd);
             break;
             case CANCLE_RESERVATION:
+                cancle_rev(q,client_fd);
             break;
             case LOGOUT:
+                if(logout(q,id,client_fd)) id = -1;
             break;
-            default:
-            //send invalid
+            default:            
+                write(client_fd,"6",2);
             break;
         }
         
@@ -114,6 +142,8 @@ void * client_manager(void *arg)
     pthread_mutex_lock(&overmutex);
     checker[client_fd] =0;
     pthread_mutex_unlock(&overmutex);
+
+    return NULL;
 }
 
 int main(int argc, char* argv[])
@@ -121,11 +151,12 @@ int main(int argc, char* argv[])
     /* init seat */
     for(int i=0;i<MAX_SEATS;++i)
     {
-        arr[i].user_id = 0;
+        arr[i].user_id = -1;
         pthread_mutex_init(&(arr[i].mutex),NULL);
     }
 
     pthread_mutex_init(&overmutex,NULL);
+    pthread_mutex_init(&loginmutex,NULL);
 
     int serverSocket = socket(PF_INET, SOCK_STREAM, 0);
     struct sockaddr_in serverAddr,caddr;
@@ -162,18 +193,157 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-int invalid(query q)
+query parsing(char str[],int n)
 {
+    char tmp[30];
+    int c = 0;
+    int t = 1;
+    query ret = {-1,-1,-1};
 
+    for(int i=0;i<n;++i)
+    {
+        if(str[i] == ' ' || str[i]=='\n')
+        {
+            tmp[c] = '\0';
+            
+            switch (t)
+            {
+            case 1:
+                ret.user = atoi(tmp);
+                break;
+            case 2:
+                ret.action = atoi(tmp);
+                break;
+            case 3:
+                ret.data = atoi(tmp);
+                break;            
+            default:
+                break;
+            }
+            ++t;
+            c=0;
+            
+        } 
+        else tmp[c++] = str[i];
+    }
+
+    return ret;
 }
 
-query parsing(char str[])
+bool login(query q,int id,int cfd)
 {
+    bool success = false;
 
+    pthread_mutex_lock(&loginmutex);
+
+    int status = user_ck[q.user];
+
+    switch (status)
+    {
+    case -1: // can login
+        success = (q.data == user_pw[q.user]);
+        if(success) user_ck[q.user] = 1;
+        break;
+    case 0: // sign up
+        user_pw[q.user] = q.data;
+        user_ck[q.user] = 1;
+        success = true;
+        break;
+    case 1: // can't login        
+    default:
+        break;
+    }
+
+    pthread_mutex_unlock(&loginmutex);
+
+    if(success) write(cfd,"1 1",4);
+    else write(cfd,"1 -1",5);
+
+    return success;
 }
 
-int login(query q);
-int rev(query q);
-void check_rev(query q,char str[]);
-int cancle_rev(query q);
-int logout(query q);
+bool logout(query q,int id,int cfd)
+{
+    pthread_mutex_lock(&loginmutex);
+    user_ck[q.user] = -1;
+    pthread_mutex_unlock(&loginmutex);
+
+    if(q.action == LOGOUT) write(cfd,"5 1",4);
+
+    return true;    
+}
+
+void rev(query q,int cfd)
+{
+    if(q.data < 0 || q.data > 255) // overflow
+    {
+        write(cfd,"2 -1",5);
+        return;
+    }
+
+    bool ret = false;
+
+    pthread_mutex_lock(&arr[q.data].mutex);
+    //printf("lock in\n");
+    ret = (arr[q.data].user_id==-1);
+    if(ret) arr[q.data].user_id = q.user;
+    pthread_mutex_unlock(&arr[q.data].mutex);
+    //printf("lock off\n");
+
+    char tmp[30];
+    int t = sprintf(tmp,"2 %d",q.data)+1;    
+    if(ret) write(cfd,tmp,t);
+    else write(cfd,"2 -1",5);
+}
+
+void cancle_rev(query q,int cfd)
+{
+    if(q.data < 0 || q.data > 255) // overflow
+    {
+        write(cfd,"4 -1",5);
+        return;
+    }
+
+    bool ret = false;
+
+    pthread_mutex_lock(&arr[q.data].mutex);
+    ret = (arr[q.data].user_id == q.user);
+    if(ret) arr[q.data].user_id = -1;
+    pthread_mutex_unlock(&arr[q.data].mutex);
+
+    char tmp[30];
+    int t = sprintf(tmp,"4 %d",q.data)+1;
+    if(ret) write(cfd,tmp,t);
+    else write(cfd,"4 -1",5);
+
+    return;
+}
+
+void check_rev(query q,int cfd)
+{
+    bool ckr[MAX_SEATS];
+    bool fck = false;
+
+    for(int i=0; i<MAX_SEATS;++i)
+    {
+        pthread_mutex_lock(&arr[i].mutex);
+        ckr[i] = (arr[i].user_id == q.user);
+        fck |= ckr[i];
+        pthread_mutex_unlock(&arr[i].mutex);
+    }
+
+    if(!fck) write(cfd,"3 -1",5);
+    else
+    {
+        char str[MAX_LINE] = "3 ";
+
+        for(int i=0;i<MAX_SEATS;++i)
+        {            
+            if(ckr[i]) strcat(str,"1 ");
+            else strcat(str,"0 ");
+        }
+        
+        write(cfd,str,strlen(str)+1);    
+        
+    }
+}

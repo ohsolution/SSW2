@@ -7,7 +7,8 @@
 #include <string.h>
 #include <fcntl.h>
 
-#define MAX_LINE 256
+#define MAX_LINE 1024
+#define MAX_SEATS 256
 
 typedef enum _ACTION
 { 
@@ -15,30 +16,39 @@ typedef enum _ACTION
     RESERVE,
     CHECK_RESERVATION,
     CANCLE_RESERVATION,
-    LOGOUT    
+    LOGOUT,
+    INVALID,
+    TERMINATE    
 }ACTION;
+
+typedef enum _bool
+{
+    false,
+    true
+}bool;
 
 typedef struct _result 
 {
     int action;
-    int data[MAX_LINE];    
+    int val;
+    bool data[MAX_SEATS];
+    int idx;    
 } result;
 
-
 /* tool function define */
-result * parsing(char str[]);
-void print_result(result *r);
+result * parsing(char str[],int n);
+bool print_result(result *r);
 
 int main (int argc, char *argv[])
 {
-    int client_socket,ifd,n;
+    int client_socket;
     struct sockaddr_in server_addr;
     struct hostent *h = gethostbyname(argv[1]);
-    char buf[MAX_LINE];
+    FILE * ifd;
+    char * buf;
 
-    if (argc == 3) ifd = STDIN_FILENO;
-    else if (argc == 4) ifd = open(argv[3],O_RDONLY);
-     
+    if (argc == 3) ifd = stdin;
+    else if (argc == 4) ifd = fopen(argv[3],"r");     
     else 
     {
         printf("Follow the input rule below\n");
@@ -66,20 +76,28 @@ int main (int argc, char *argv[])
         exit(3);
     }
 
-    while((n=read(ifd,buf,MAX_LINE)) >0)
+    size_t tli= MAX_LINE;
+    ssize_t n;
+    bool term = false;
+
+    while((n=getline(&(buf),&tli,ifd))!=-1)
     {
         write(client_socket,buf,n);
-
         n = read(client_socket,buf,MAX_LINE);
+        
+        result * ret = parsing(buf,n);
 
-        result * ret = parsing(buf);
+        if(print_result(ret)) 
+        {
+            term = true;
+            break;
+        }   
+    }
 
-        print_result(ret);
-    };
-
-    if(ifd != STDOUT_FILENO)
+    if(ifd != stdin && !term)    
     {
-        // send TERMINATE to server
+        write(client_socket,"0 0 0",6);
+        n = read(client_socket,buf,MAX_LINE);
     }
 	    
     close(client_socket);
@@ -87,55 +105,83 @@ int main (int argc, char *argv[])
     return 0;
 }
 
-result * parsing(char str[])
+result * parsing(char str[],int n)
 {
+    char tmp[30];
+    result * ret = (result *)malloc(sizeof(result));
+    bool act = false;
+    int c = 0;
+    int idx = 0;
 
+    for(int i=0;i<n;++i)
+    {
+        if(str[i] == ' ' || str[i] == '\0')
+        {
+            tmp[c] = '\0';
+
+            if(!act)
+            {                
+                ret->action = atoi(tmp);
+                act = true;
+            }
+            else
+            {
+                if(ret->action == CHECK_RESERVATION) ret->data[idx++] = atoi(tmp);
+                else ret->val = atoi(tmp);                
+            }
+
+            c=0;            
+        } 
+        else tmp[c++] = str[i];
+    }
+
+    return ret;
 }
 
-void print_result(result * r)
+bool print_result(result * r)
 {
-        /*
-     * Insert your PA3 client code
-     *
-     * You should handle input query
-     *
-     * Follow the print format below
-     *
-     * 1. Log in
-     * - On success
-     *   printf("Login success\n");
-     * - On fail
-     *   printf("Login failed\n");
-     *
-     * 2. Reserve
-     * - On success
-     *   printf("Seat %d is reserved\n");
-     * - On fail
-     *   printf("Reservation failed\n");
-     *
-     * 3. Check reservation
-     * - On success
-     *   printf("Reservation: %s\n");
-     *   or
-     *   printf("Reservation: ");
-     *   printf("%d, ");
-     *   ...
-     *   printf("%d\n");
-     * - On fail
-     *   printf("Reservation check failed\n");
-     *
-     * 4. Cancel reservation
-     * - On success
-     *   printf("Seat %d is canceled\n");
-     * - On fail
-     *   printf("Cancel failed\n");
-     *
-     * 5. Log out
-     * - On success
-     *   printf("Logout success\n");
-     * - On fail
-     *   printf("Logout failed\n");
-     *
-     */
+    bool ret = false;
 
+    switch (r->action)
+    {
+    case LOGIN:
+        if(r->val == 1) printf("Login success\n");
+        else if(r->val == -1) printf("Login failed\n");
+        break;
+    case RESERVE:
+        if(r->val == -1) printf("Reservation failed\n");
+        else printf("Seat %d is reserved\n",r->val);
+        break;
+    case CHECK_RESERVATION:
+        if(r->data[0] == -1) printf("Reservation check failed\n");
+        else
+        {
+            printf("Reservation: ");
+
+            int last = MAX_SEATS;
+            while(!r->data[--last]);
+            for(int i=0;i<MAX_SEATS;++i) if(r->data[i] && i!=last) printf("%d, ",i);
+            printf("%d\n",last);
+        }
+        break;
+    case CANCLE_RESERVATION:
+        if(r->val == -1) printf("Cancel failed\n");
+        else printf("Seat %d is canceled\n",r->val);
+        break;
+    case LOGOUT:
+        if(r->val == 1) printf("Logout success\n");
+        else if(r->val == -1) printf("Logout failed\n");   
+        break;
+    case INVALID:
+        printf("Invalied query\n");
+        break;
+    case TERMINATE:
+        ret = (r->val == 256);
+        break;    
+    default:
+        break;
+    }
+
+    free(r);
+    return ret;
 }
