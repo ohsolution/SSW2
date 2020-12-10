@@ -8,7 +8,7 @@
 #include <string.h>
 
 #define MAX_SEATS 256
-#define MAX_CLIENT 2
+#define MAX_CLIENT 1024
 #define MAX_LINE 1024
 
 /* static data define */
@@ -51,8 +51,8 @@ int user_ck[MAX_CLIENT];
 /* tool function define*/
 bool invalid(query q){return ((q.user < 0 || q.user > 1023) || (q.action < 1 || q.action > 5) || q.data==-1);}
 bool terminate(query q){return !(q.action || q.data || q.user);}
-
 query parsing(char str[],int n);
+
 bool login(query q,int id,int cfd);
 void rev(query q,int cfd);
 void check_rev(query q,int cfd);
@@ -71,7 +71,7 @@ void * client_manager(void *arg)
     /* handle opr */
     while((n = read(client_fd,buf,MAX_LINE)) > 0)
     {
-        //write(STDOUT_FILENO,buf,n);
+        //write(STDOUT_FILENO,buf,n); // DEBUG
 
         bool inv = false;
         int spcheck = 0;
@@ -92,7 +92,7 @@ void * client_manager(void *arg)
 
         query q = parsing(buf,n);
 
-        //printf("user : %d , action : %d, data : %d\n",q.user,q.action,q.data);
+        // printf("user : %d , action : %d, data : %d\n",q.user,q.action,q.data); // DEBUG
 
         if(terminate(q))
         {            
@@ -192,7 +192,13 @@ int main(int argc, char* argv[])
         }
     }
 
-    for(int i=0;i<MAX_LINE;++i) pthread_join(tid[i],NULL);    
+    for(int i=0;i<MAX_LINE;++i) pthread_join(tid[i],NULL);
+
+    for(int i = 0;i< MAX_SEATS;++i) pthread_mutex_destroy(&arr[i].mutex);
+
+    pthread_mutex_destroy(&overmutex);
+    pthread_mutex_destroy(&loginmutex);        
+    close(serverSocket);
 
     return 0;
 }
@@ -287,12 +293,9 @@ void rev(query q,int cfd)
 
     bool ret = false;
 
-    pthread_mutex_lock(&arr[q.data].mutex);
-    //printf("lock in\n");
     ret = (arr[q.data].user_id==-1);
     if(ret) arr[q.data].user_id = q.user;
     pthread_mutex_unlock(&arr[q.data].mutex);
-    //printf("lock off\n");
 
     char tmp[30];
     int t = sprintf(tmp,"2 %d",q.data)+1;    

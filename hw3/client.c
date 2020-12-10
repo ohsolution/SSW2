@@ -84,6 +84,8 @@ int main (int argc, char *argv[])
     {
         write(client_socket,buf,n);
         n = read(client_socket,buf,MAX_LINE);
+
+        // printf("\n %s \n",buf); // DEBUG
         
         result * ret = parsing(buf,n);
 
@@ -96,10 +98,11 @@ int main (int argc, char *argv[])
 
     if(ifd != stdin && !term)    
     {
-        write(client_socket,"0 0 0",6);
+        write(client_socket,"0 0 0\n",7);
         n = read(client_socket,buf,MAX_LINE);
     }
-	    
+
+    if(ifd != stdin) fclose(ifd);	    
     close(client_socket);
 
     return 0;
