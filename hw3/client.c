@@ -29,9 +29,11 @@ typedef enum _bool
 
 typedef struct _result 
 {
-    int action;
+    ACTION action;
     int val;
-    bool data[MAX_SEATS];
+
+    /* for result of check_reservation query */
+    bool data[MAX_SEATS]; 
     int idx;    
 } result;
 

@@ -40,19 +40,26 @@ typedef struct _seat
     pthread_mutex_t mutex;
 } seat;
 
-pthread_mutex_t overmutex;
-pthread_mutex_t loginmutex;
-seat arr[MAX_SEATS];
 pthread_t tid[MAX_CLIENT];
-int checker[MAX_CLIENT];
+
+/* for client manage */
+pthread_mutex_t overmutex; 
+bool checker[MAX_CLIENT];
+
+/* for login manage */
+pthread_mutex_t loginmutex; 
 int user_pw[MAX_CLIENT];
 int user_ck[MAX_CLIENT];
+
+/* for seat manage */
+seat arr[MAX_SEATS];
 
 /* tool function define*/
 bool invalid(query q){return ((q.user < 0 || q.user > 1023) || (q.action < 1 || q.action > 5) || q.data==-1);}
 bool terminate(query q){return !(q.action || q.data || q.user);}
 query parsing(char str[],int n);
 
+/* query action handle function */
 bool login(query q,int id,int cfd);
 void rev(query q,int cfd);
 void check_rev(query q,int cfd);
@@ -65,7 +72,6 @@ void * client_manager(void *arg)
     int client_fd = *((int *)arg);
     ssize_t n;
     char buf[MAX_LINE];
-    int ret;
     int id = -1;
 
     /* handle opr */
@@ -144,7 +150,7 @@ void * client_manager(void *arg)
     }
 
     pthread_mutex_lock(&overmutex);
-    checker[client_fd] =0;
+    checker[client_fd] =false;
     pthread_mutex_unlock(&overmutex);
 
     return NULL;
@@ -184,7 +190,7 @@ int main(int argc, char* argv[])
             int d = -1;            
             pthread_mutex_lock(&overmutex);
             while(++d<MAX_LINE && checker[d]);
-            checker[d] =1;
+            checker[d] =true;
             pthread_mutex_unlock(&overmutex);
 
             copyfd[d] = cfd;
@@ -293,6 +299,7 @@ void rev(query q,int cfd)
 
     bool ret = false;
 
+    pthread_mutex_lock(&arr[q.data].mutex);
     ret = (arr[q.data].user_id==-1);
     if(ret) arr[q.data].user_id = q.user;
     pthread_mutex_unlock(&arr[q.data].mutex);

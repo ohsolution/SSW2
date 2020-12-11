@@ -79,10 +79,36 @@ void *consume(void *args)
 
 void put_data(queue_t *q, int d) 
 {
-   
+   pthread_mutex_lock(&q->lock);
+
+   while(q->count == QSIZE) pthread_cond_wait(&q->notfull,&q->lock);
+
+   q->data[(q->index+q->count++)%QSIZE] = d;
+
+   printf("put data %d to queue\n",d);
+
+   pthread_cond_signal(&q->notempty);
+
+   pthread_mutex_unlock(&q->lock);
 }
+
 int get_data(queue_t *q) 
 {
+   pthread_mutex_lock(&q->lock);
 
+   int ret;
+
+   while(!q->count) pthread_cond_wait(&q->notempty,&q->lock);
+
+   ret = q->data[q->index];
+   if(++(q->index) == QSIZE) q->index = 0; 
+   --(q->count);
+
+   printf("got data %d from queue\n",ret);
+
+   pthread_cond_signal(&q->notfull);
+
+   pthread_mutex_unlock(&q->lock);
+
+   return ret;
 }
-
