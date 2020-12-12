@@ -149,6 +149,7 @@ void * client_manager(void *arg)
         
     }
 
+    close(client_fd);
     pthread_mutex_lock(&overmutex);
     checker[client_fd] =false;
     pthread_mutex_unlock(&overmutex);
@@ -192,7 +193,7 @@ int main(int argc, char* argv[])
             while(++d<MAX_LINE && checker[d]);
             checker[d] =true;
             pthread_mutex_unlock(&overmutex);
-
+            printf("socket : %d\n",cfd);
             copyfd[d] = cfd;
             pthread_create(&tid[d],NULL,client_manager,(void*)&copyfd[d]);
         }
