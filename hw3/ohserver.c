@@ -74,6 +74,8 @@ void * client_manager(void *arg)
     char buf[MAX_LINE];
     int id = -1;
 
+    pthread_detach(pthread_self());
+
     /* handle opr */
     while((n = read(client_fd,buf,MAX_LINE)) > 0)
     {
