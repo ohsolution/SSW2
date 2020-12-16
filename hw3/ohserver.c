@@ -200,8 +200,6 @@ int main(int argc, char* argv[])
         }
     }
 
-    for(int i=0;i<MAX_LINE;++i) pthread_join(tid[i],NULL);
-
     for(int i = 0;i< MAX_SEATS;++i) pthread_mutex_destroy(&arr[i].mutex);
 
     pthread_mutex_destroy(&overmutex);
