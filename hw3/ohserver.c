@@ -151,10 +151,10 @@ void * client_manager(void *arg)
         
     }
 
-    close(client_fd);
     pthread_mutex_lock(&overmutex);
     checker[client_fd] =false;
     pthread_mutex_unlock(&overmutex);
+    close(client_fd);
 
     return NULL;
 }
